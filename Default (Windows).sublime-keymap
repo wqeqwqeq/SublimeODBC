@@ -1,0 +1,17 @@
+[
+    {
+        "keys": ["ctrl+e", "ctrl+o"],
+        "command": "so_start_conn",
+    },
+    {
+        "keys": ["ctrl+e", "ctrl+e"],
+        "command": "so_run_sql_cmd",
+        "args": {
+            "limit": 300,
+            "number_of_cache_query": 20,
+            "timeout": 180,
+            "output_in_panel": false,
+            "queries":null
+        }
+    }
+]
