@@ -1,4 +1,12 @@
 [
+    
+    {
+        "keys": ["ctrl+q"],
+        "command": "expand_selection_to_semicolon",
+        "args": {
+            "mode": "select"
+        }
+    },
     {
         "keys": ["ctrl+e", "ctrl+o"],
         "command": "so_start_conn",
@@ -9,9 +17,91 @@
         "args": {
             "limit": 300,
             "number_of_cache_query": 20,
-            "timeout": 180,
+            "timeout": 5,
             "output_in_panel": false,
             "queries":null
         }
-    }
+    },
+    {
+        "keys": ["ctrl+e", "ctrl+b"],
+        "command": "sa_format"
+    },
+    {
+        "keys": ["ctrl+u", "ctrl+p"],
+        "command": "upload_csv_to_table"
+    },
+    {
+        "keys": ["ctrl+m", "ctrl+i"],
+        "command": "meta_init",
+        "args" : {
+            "include_dtype": "True"
+        }
+    },
+    {
+        "keys": ["ctrl+m", "ctrl+n"],
+        "command": "meta_new_conn_group",
+        "args" : {
+            "include_dtype": "True"
+        }
+    },
+    {
+        "keys": ["ctrl+m", "ctrl+d"],
+        "command": "meta_delete_connection",
+    },
+    {
+        "keys": ["ctrl+m", "ctrl+b"],
+        "command": "meta_browse_connection",
+    },
+    {
+        "keys": ["ctrl+m", "ctrl+u"],
+        "command": "meta_update_connection_group",
+        "args" : {
+            "include_dtype": "True"
+        }
+    },
+    {
+        "keys": ["ctrl+m", "ctrl+a"],
+        "command": "meta_add_table_in_conn_group",
+        "args" : {
+            "include_dtype": "True"
+        }
+    },
+    {
+        "keys": ["ctrl+m", "ctrl+r"],
+        "command": "meta_remove_table_in_conn_group",
+        "args" : {
+            "include_dtype": "True"
+        }
+    },
+    {
+        "keys": ["ctrl+m", "ctrl+s"],
+        "command": "meta_select_connection",
+    },
+    {
+        "keys": ["ctrl+alt+right"],
+        "command": "set_layout",
+        "args": {
+            "cols": [0.0, 0.55, 1.0],
+            "rows": [0.0, 1.0],
+            "cells": [
+                [0, 0, 1, 1],
+                [1, 0, 2, 1]
+            ]
+        }
+    }, {
+        "keys": ["ctrl+alt+down"],
+        "command": "set_layout",
+        "args": {
+            "cols": [0.0, 1.0],
+            "rows": [0.0, 0.55, 1.0],
+            "cells": [
+                [0, 0, 1, 1],
+                [0, 1, 1, 2]
+            ]
+        }
+    }, {
+        "keys": ["f1"],
+        "command": "resize_window_group",
+
+    },
 ]

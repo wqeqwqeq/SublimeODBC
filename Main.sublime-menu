@@ -1,0 +1,134 @@
+[
+    {
+        "caption": "SublimeODBC",
+        "mnemonic": "S",
+        "id": "SublimeODBC",
+        "children": [
+            {
+                "caption": "Connection",
+                "children": [
+                    {
+                        "caption": "Start Connection",
+                        "command": "so_start_conn"
+                    },
+                    {
+                        "caption": "Run SQL Command",
+                        "command": "so_run_sql_cmd",
+                        "args": {
+                            "limit": 300,
+                            "number_of_cache_query": 20,
+                            "timeout": 5,
+                            "output_in_panel": false,
+                            "queries": null
+                        }
+                    },
+                    {
+                        "caption": "Format SQL",
+                        "command": "sa_format"
+                    },
+                    {
+                        "caption": "Upload CSV to Table",
+                        "command": "upload_csv_to_table"
+                    }
+                ]
+            },
+            {
+                "caption": "Metadata",
+                "children": [
+                    {
+                        "caption": "Initialize Metadata",
+                        "command": "meta_init",
+                        "args": {
+                            "include_dtype": "True"
+                        }
+                    },
+                    {
+                        "caption": "New Connection Group",
+                        "command": "meta_new_conn_group",
+                        "args": {
+                            "include_dtype": "True"
+                        }
+                    },
+                    {
+                        "caption": "Delete Connection",
+                        "command": "meta_delete_connection"
+                    },
+                    {
+                        "caption": "Browse Connection",
+                        "command": "meta_browse_connection"
+                    },
+                    {
+                        "caption": "Update Connection Group",
+                        "command": "meta_update_connection_group",
+                        "args": {
+                            "include_dtype": "True"
+                        }
+                    },
+                    {
+                        "caption": "Add Table to Connection Group",
+                        "command": "meta_add_table_in_conn_group",
+                        "args": {
+                            "include_dtype": "True"
+                        }
+                    },
+                    {
+                        "caption": "Remove Table from Connection Group",
+                        "command": "meta_remove_table_in_conn_group",
+                        "args": {
+                            "include_dtype": "True"
+                        }
+                    },
+                    {
+                        "caption": "Select Connection",
+                        "command": "meta_select_connection"
+                    }
+                ]
+            },
+            {
+                "caption": "Layout",
+                "children": [
+                    {
+                        "caption": "Split Right",
+                        "command": "set_layout",
+                        "args": {
+                            "cols": [0.0, 0.55, 1.0],
+                            "rows": [0.0, 1.0],
+                            "cells": [
+                                [0, 0, 1, 1],
+                                [1, 0, 2, 1]
+                            ]
+                        }
+                    },
+                    {
+                        "caption": "Split Down",
+                        "command": "set_layout",
+                        "args": {
+                            "cols": [0.0, 1.0],
+                            "rows": [0.0, 0.55, 1.0],
+                            "cells": [
+                                [0, 0, 1, 1],
+                                [0, 1, 1, 2]
+                            ]
+                        }
+                    },
+                    {
+                        "caption": "Resize Window Group",
+                        "command": "resize_window_group"
+                    }
+                ]
+            },
+            {
+                "caption": "Selection",
+                "children": [
+                    {
+                        "caption": "Expand Selection to Semicolon",
+                        "command": "expand_selection_to_semicolon",
+                        "args": {
+                            "mode": "select"
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+] 

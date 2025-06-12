@@ -15,13 +15,13 @@ def load_package_path():
     )
     lib_path = f"{package_path}\\{package_name}\\lib"
     project_path = f"{package_path}\\{package_name}"
-
+    metastore_path = f"{package_path}\\{package_name}\\metastore"
 
     if lib_path not in sys.path:
         sys.path.append(lib_path)
         sys.path.append(project_path)
     os.chdir(project_path)
-    return cache_path, lib_path, project_path
+    return cache_path, lib_path, project_path, metastore_path
 
 
 def crypt(string, encoding="ascii", encode=True):

@@ -1,15 +1,16 @@
 import pyodbc
+import os
 from datetime import datetime, timedelta, date
 from util import get_uid_pw, load_config
 
 
 class ConnectorODBC:
-    def __init__(self, config_path="config.json", password=None, use_env_vars=False, db_type="sqlserver"):
+    def __init__(self, config_path="config.json"):
         # Always load configuration from JSON file
         config = load_config(config_path)
         
         # Get db_type from config or use parameter
-        db_type = config.get('db_type', db_type)
+        db_type = config.get('db_type')
         
         # Load database queries from config file
         if 'database_queries' not in config or db_type not in config['database_queries']:
@@ -17,27 +18,31 @@ class ConnectorODBC:
         
         self.config = config['database_queries'][db_type]
         
-        # Build connection string based on initialization method
+        # Auto-detect if environment variables are set
+        use_env_vars = bool(os.getenv("SQLUSERNAMEENCODED") and os.getenv("SQLPWENCODED"))
+        
+        # Build connection string based on whether env vars are available
         if use_env_vars:
             # Use encoded credentials from environment (legacy method)
             user, pw = get_uid_pw()
             connection_string = f"Driver={{ODBC Driver 18 for SQL Server}};Server=tcp:h1b.database.windows.net,1433;Database=h1b;Uid={user};Pwd={pw};Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;"
-        elif password:
-            # Use provided password with default config
-            connection_string = f"Driver={{ODBC Driver 18 for SQL Server}};Server=tcp:h1b.database.windows.net,1433;Database=h1b;Uid=stanley;Pwd={password};Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;"
+
         else:
             # Build connection string from config
-            conn_config = config.get('connection', config)  # Support both nested and flat structure
-            connection_string = (
-                f"Driver={{{conn_config.get('driver', 'ODBC Driver 18 for SQL Server')}}};"
-                f"Server={conn_config['server']};"
-                f"Database={conn_config['database']};"
-                f"Uid={conn_config['username']};"
-                f"Pwd={conn_config['password']};"
-                f"Encrypt={conn_config.get('encrypt', 'yes')};"
-                f"TrustServerCertificate={conn_config.get('trust_server_certificate', 'no')};"
-                f"Connection Timeout={conn_config.get('connection_timeout', 30)};"
-            )
+            if config.get("connection_string"):
+                connection_string = config.get("connection_string")
+            else:
+                conn_config = config.get('connection', config)  # Support both nested and flat structure
+                connection_string = (
+                    f"Driver={{{conn_config.get('driver', 'ODBC Driver 18 for SQL Server')}}};"
+                    f"Server={conn_config['server']};"
+                    f"Database={conn_config['database']};"
+                    f"Uid={conn_config['username']};"
+                    f"Pwd={conn_config['password']};"
+                    f"Encrypt={conn_config.get('encrypt', 'yes')};"
+                    f"TrustServerCertificate={conn_config.get('trust_server_certificate', 'no')};"
+                    f"Connection Timeout={conn_config.get('connection_timeout', 30)};"
+                )
         
         self.conn = pyodbc.connect(connection_string)
         self.cursor = self.conn.cursor()
@@ -82,19 +87,19 @@ class ConnectorODBC:
             if db not in db_list:
                 db_list.append(db)
             
-            # Build db_schema mapping
+            # Build db_schema mapping - now using nested dictionaries
             if db not in db_schema:
-                db_schema[db] = []
+                db_schema[db] = {}
             if schema not in db_schema[db]:
-                db_schema[db].append(schema)
+                db_schema[db][schema] = {}
             
-            # Build db_schema_tbl mapping
+            # Build db_schema_tbl mapping - now using nested dictionaries for tables
             if db not in db_schema_tbl:
                 db_schema_tbl[db] = {}
             if schema not in db_schema_tbl[db]:
-                db_schema_tbl[db][schema] = []
+                db_schema_tbl[db][schema] = {}
             if table not in db_schema_tbl[db][schema]:
-                db_schema_tbl[db][schema].append(table)
+                db_schema_tbl[db][schema][table] = {}
             
             # Initialize nested structure if not exists
             if db not in db_schema_tbl_col:
@@ -102,17 +107,13 @@ class ConnectorODBC:
             if schema not in db_schema_tbl_col[db]:
                 db_schema_tbl_col[db][schema] = {}
             if table not in db_schema_tbl_col[db][schema]:
-                if include_dtype:
-                    db_schema_tbl_col[db][schema][table] = {}
-                else:
-                    db_schema_tbl_col[db][schema][table] = []
+                db_schema_tbl_col[db][schema][table] = {}
             
             # Add column data based on include_dtype flag
             if include_dtype:
                 db_schema_tbl_col[db][schema][table][col] = dtype
             else:
-                if col not in db_schema_tbl_col[db][schema][table]:
-                    db_schema_tbl_col[db][schema][table].append(col)
+                db_schema_tbl_col[db][schema][table][col] = ""
         
         return  db_list, db_schema, db_schema_tbl, db_schema_tbl_col
     
@@ -162,3 +163,4 @@ class ConnectorODBC:
         lst = self.cursor.fetchall()
         cols = [ele[0] for ele in self.cursor.description]
         return [ele for ele in zip(cols, *lst) if len(set(ele[1:])) != 1]
+    
