@@ -1,0 +1,1 @@
+{"example_db": {"public": {"users": {}, "products": {}, "orders": {}}, "staging": {"raw_data": {}, "temp_tables": {}}, "production": {"customer_data": {}, "sales_data": {}}}, "sample_db": {"analytics": {"metrics": {}, "reports": {}}, "reporting": {"daily_stats": {}, "monthly_stats": {}}, "temp": {"temp_table1": {}, "temp_table2": {}}}} 

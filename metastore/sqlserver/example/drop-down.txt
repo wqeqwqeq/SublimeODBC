@@ -1,0 +1,16 @@
+hr_management.hr.employees.employee_id
+hr_management.hr.employees.first_name
+hr_management.hr.employees.last_name
+hr_management.hr.employees.hire_date
+hr_management.hr.departments.department_id
+hr_management.hr.departments.department_name
+hr_management.payroll.salary.employee_id
+hr_management.payroll.salary.base_salary
+inventory_system.warehouse.products.product_id
+inventory_system.warehouse.products.product_name
+inventory_system.warehouse.products.category
+inventory_system.warehouse.stock_levels.quantity
+inventory_system.procurement.suppliers.supplier_id
+inventory_system.procurement.suppliers.company_name
+inventory_system.procurement.purchase_orders.po_id
+inventory_system.procurement.purchase_orders.order_date 

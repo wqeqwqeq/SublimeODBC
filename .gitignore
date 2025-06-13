@@ -1,5 +1,10 @@
 __pycache__/
 .venv/
 .vscode/
-metastore
-!metastore/tmp
+metastore/*
+!metastore/snowflake/
+!metastore/sqlserver/
+metastore/snowflake/*
+!metastore/snowflake/example/
+metastore/sqlserver/*
+!metastore/sqlserver/example/

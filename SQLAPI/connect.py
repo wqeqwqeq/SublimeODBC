@@ -1,48 +1,52 @@
 import pyodbc
 import os
-from datetime import datetime, timedelta, date
 from util import get_uid_pw, load_config
-
+import sublime
 
 class ConnectorODBC:
     def __init__(self, config_path="config.json"):
-        # Always load configuration from JSON file
+        # First load SQL.settings to get current DBMS
+        settings = load_config("SQL.settings")
+        current_dbms = settings.get('current_dbms')
+        if not current_dbms:
+            raise ValueError("current_dbms not found in SQL.settings")
+        
+        # Load configuration from JSON file
         config = load_config(config_path)
         
-        # Get db_type from config or use parameter
-        db_type = config.get('db_type')
+        # Get database configuration for current DBMS
+        if current_dbms not in config:
+            raise ValueError(f"Database configuration for '{current_dbms}' not found in config file '{config_path}'")
         
-        # Load database queries from config file
-        if 'database_queries' not in config or db_type not in config['database_queries']:
-            raise ValueError(f"Database queries for '{db_type}' not found in config file '{config_path}'")
+        db_config = config[current_dbms]
         
-        self.config = config['database_queries'][db_type]
+        self.config = db_config['database_queries']
         
-        # Auto-detect if environment variables are set
-        use_env_vars = bool(os.getenv("SQLUSERNAMEENCODED") and os.getenv("SQLPWENCODED"))
+        # Get connection string from config
+        connection_string = db_config.get("connection_string")
+        if not connection_string:
+            raise ValueError(f"Connection string not found in config file '{config_path}' for '{current_dbms}'")
         
-        # Build connection string based on whether env vars are available
-        if use_env_vars:
-            # Use encoded credentials from environment (legacy method)
-            user, pw = get_uid_pw()
-            connection_string = f"Driver={{ODBC Driver 18 for SQL Server}};Server=tcp:h1b.database.windows.net,1433;Database=h1b;Uid={user};Pwd={pw};Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;"
-
-        else:
-            # Build connection string from config
-            if config.get("connection_string"):
-                connection_string = config.get("connection_string")
-            else:
-                conn_config = config.get('connection', config)  # Support both nested and flat structure
-                connection_string = (
-                    f"Driver={{{conn_config.get('driver', 'ODBC Driver 18 for SQL Server')}}};"
-                    f"Server={conn_config['server']};"
-                    f"Database={conn_config['database']};"
-                    f"Uid={conn_config['username']};"
-                    f"Pwd={conn_config['password']};"
-                    f"Encrypt={conn_config.get('encrypt', 'yes')};"
-                    f"TrustServerCertificate={conn_config.get('trust_server_certificate', 'no')};"
-                    f"Connection Timeout={conn_config.get('connection_timeout', 30)};"
-                )
+        # Check if connection string has any format placeholders
+        try:
+            # Try to format with empty values to see if it has placeholders
+            connection_string.format_map({})
+        except KeyError as e:
+            env_var_user = f'{current_dbms.upper()}USERNAMEENCODED'
+            env_var_pw = f'{current_dbms.upper()}PWENCODED'
+            
+            if not os.getenv(env_var_user) or not os.getenv(env_var_pw):
+                sublime.error_message(f"Environment variable {env_var_user} or {env_var_pw} not found")
+                raise ValueError(f"Environment variable {env_var_user} or {env_var_pw} not found")
+            
+            # Get credentials from environment variables
+            user, pw = get_uid_pw(env_var_user, env_var_pw)
+            
+            # Fill in the credentials using format_map
+            connection_string = connection_string.format_map({
+                'user': user,
+                'pwd': pw
+            })
         
         self.conn = pyodbc.connect(connection_string)
         self.cursor = self.conn.cursor()
@@ -58,7 +62,26 @@ class ConnectorODBC:
         print(query)
         self.cursor.execute(query)
 
-    
+    def execute_many(self, queries):
+        """Execute multiple SQL queries separated by semicolons.
+        
+        Args:
+            queries (str): A string containing one or more SQL queries separated by semicolons.
+            
+        Returns:
+            list: A list of results from each query execution.
+        """
+        # Split queries by semicolon and clean up
+        for q in queries.split(';'):
+            if len(set(q).intersection(set(["\n", "\r", "\t", " ",""])) ) == len(set(q)):
+                continue
+            try:
+                self.execute(q)
+                # Try to fetch results if any
+            except Exception as e:
+                # Add error to results and continue with next query
+                print(f"Error executing query: {str(e)}")
+        
 
     def close(self):
         if not self.conn.closed:
@@ -119,9 +142,36 @@ class ConnectorODBC:
     
     def get_all_accessible_meta(self, include_dtype = True):
         """Get all accessible metadata using database-specific query from config"""
-        query = self.config["get_all_columns"]
-        self.execute(query)
-        meta = self.cursor.fetchall()
+        query_config = self.config["get_all_columns"]
+        
+        # Handle nested query configuration (e.g. for Snowflake)
+        if isinstance(query_config, dict):
+            # First get list of databases
+            list_db_query = query_config["list_db"]
+            if ";" in list_db_query:
+                self.execute_many(list_db_query)
+                db_list_raw = self.cursor.fetchall()
+            else:
+                self.execute(list_db_query)
+                db_list_raw = self.cursor.fetchall()
+
+            databases = [row[0] for row in db_list_raw]
+            
+            # Initialize empty results
+            all_meta = []
+            
+            # Query each database
+            for db in databases:
+                db_query = query_config["get_all_columns_under_db"].format(db)
+                self.execute(db_query)
+                db_meta = self.cursor.fetchall()
+                all_meta.extend(db_meta)
+            
+            meta = all_meta
+        else:
+            # Handle simple query configuration (e.g. for SQL Server)
+            self.execute(query_config)
+            meta = self.cursor.fetchall()
         
         db_list, db_schema, db_schema_tbl, db_schema_tbl_col = self._parse_meta_results(meta, include_dtype)
         return db_list, db_schema, db_schema_tbl, db_schema_tbl_col

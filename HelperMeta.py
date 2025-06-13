@@ -7,11 +7,8 @@ import threading
 import ctypes
 import shutil
 
-
-
-
 from SQLAPI.connect import ConnectorODBC
-from SQLAPI.util import load_package_path, crypt
+from SQLAPI.util import load_package_path, crypt, load_config, credential_set
 
 cache_path, lib_path, plugin_path, metastore_path = load_package_path()
 
@@ -36,30 +33,49 @@ def stop_thread(t1):
     print(f"Successfull stop thread {thread_id}")
 
 
-def credential_set(show_msg=True):
-    if (
-        os.getenv("SQLUSERNAMEENCODED") is not None
-        and os.getenv("SQLPWENCODED") is not None
-    ):
-        if show_msg:
-            sublime.message_dialog("SQL username and password has set up!")
-        return True
-    else:
-        return False
 
 
-# def open_auto_complete_file
 
 
-class MetaPassword(sublime_plugin.WindowCommand):
+
+class MetaChooseConnection(sublime_plugin.WindowCommand):
     def run(self):
-        self.counter = 0
-        self.prompts = ["Enter SQL Username", "Enter SQL Password"]
+        self.config = load_config()
+        self.dbms_options = list(self.config.keys())
+        self.window.show_quick_panel(
+            self.dbms_options,
+            self.on_select,
+            sublime.KEEP_OPEN_ON_FOCUS_LOST
+        )
 
+    def on_select(self, index):
+        if index == -1:
+            return
+        
+        self.selected_dbms = self.dbms_options[index].upper()
+        # Update current_dbms in SQL.settings
+        try:
+            with open("SQL.settings", "r") as f:
+                settings = json.loads(f.read())
+            settings['current_dbms'] = self.selected_dbms.lower()
+            with open("SQL.settings", "w") as f:
+                f.write(json.dumps(settings))
+            self.window.run_command("so_restart_connection")
+        except Exception as e:
+            sublime.message_dialog(f"Error updating SQL.settings: {str(e)}")
+
+
+class MetaPassword(MetaChooseConnection):
+    def on_select(self, index):
+        self.selected_dbms = self.dbms_options[index].upper()
+        if index == -1:
+            return
+        
+        self.counter = 0
+        self.prompts = [f"Enter {self.selected_dbms} Username", f"Enter {self.selected_dbms} Password"]
         self.show_prompt()
 
     def show_prompt(self):
-        # user
         if self.counter == 0:
             panel = self.window.show_input_panel(
                 self.prompts[self.counter], "", self.on_done, None, None
@@ -73,23 +89,33 @@ class MetaPassword(sublime_plugin.WindowCommand):
     def on_done(self, user_input):
         self.counter += 1
         user_input = crypt(user_input)
-        # user
+        
         if self.counter < len(self.prompts):
+            # Store username
             os.system(
-                f"""powershell -command "[System.Environment]::SetEnvironmentVariable('TeradataUserNameEncoded','{user_input}',[System.EnvironmentVariableTarget]::User)"
-    """
+                f"""powershell -command "[System.Environment]::SetEnvironmentVariable('{self.selected_dbms}USERNAMEENCODED','{user_input}',[System.EnvironmentVariableTarget]::User)"
+                """
             )
-            # sublime.message_dialog("username entered: '%s'" % user_input)
             self.show_prompt()
-        # password
         else:
+            # Store password
             os.system(
-                f"""powershell -command "[System.Environment]::SetEnvironmentVariable('TeradataPWEncoded','{user_input}',[System.EnvironmentVariableTarget]::User)"
-    """
+                f"""powershell -command "[System.Environment]::SetEnvironmentVariable('{self.selected_dbms}PWENCODED','{user_input}',[System.EnvironmentVariableTarget]::User)"
+                """
             )
             sublime.message_dialog(
-                "Username and Password has set\nPlease close and reopen sublime to enable system variable"
+                f"{self.selected_dbms} Username and Password have been set\nPlease close and reopen sublime to enable system variables"
             )
+
+
+def get_dbms_path():
+    """Get the path for the current DBMS folder"""
+    with open("SQL.settings", "r") as f:
+        settings = json.loads(f.read())
+    current_dbms = settings.get('current_dbms', '').lower()
+    if not current_dbms:
+        return metastore_path
+    return os.path.join(metastore_path, current_dbms)
 
 
 class MetaInit(sublime_plugin.WindowCommand):
@@ -101,10 +127,12 @@ class MetaInit(sublime_plugin.WindowCommand):
             panel.set_read_only(False)
             panel.settings().set("word_wrap", False)
 
-            # Create Alias.custom-completions
+            # Create DBMS folder if it doesn't exist
+            dbms_path = get_dbms_path()
+            os.makedirs(dbms_path, exist_ok=True)
 
-            # Create 'all' folder
-            all_folder_path = os.path.join(metastore_path, "all")
+            # Create 'all' folder under DBMS folder
+            all_folder_path = os.path.join(dbms_path, "all")
             create_metadata_folder(all_folder_path, "all", panel)
 
             # Get metadata from database
@@ -129,20 +157,9 @@ class MetaInit(sublime_plugin.WindowCommand):
             # Create conn-group-component.txt with "all"
             create_conn_group_component(all_folder_path, db_list)
 
-            # Create SQL.custom-completions
-            sql_completions = {
-                "enable": True,
-                "fileExtensions": ["sql"],
-                "separator": ".",
-                "current_selection": "all",
-            }
-            
-            with open(metastore_path + "\\SQL.custom-completions", "w") as f:
-                f.write(json.dumps(sql_completions))
 
             # Print summary
-            additional_files = [os.path.join(metastore_path, 'SQL.custom-completions')]
-            print_metadata_summary(panel, all_folder_path, db_list, drop_down_list, additional_files)
+            print_metadata_summary(panel, all_folder_path, db_list, drop_down_list)
             panel.set_read_only(True)
             self.window.run_command("show_panel", {"panel": "output.meta_init"})
 
@@ -200,8 +217,9 @@ class MetaNewConnGroup(sublime_plugin.WindowCommand):
             ]
             
             def on_execute(user_input):
-                # Create connection group folder
-                connection_group_folder = os.path.join(metastore_path, user_input)
+                # Create connection group folder under DBMS folder
+                dbms_path = get_dbms_path()
+                connection_group_folder = os.path.join(dbms_path, user_input)
                 create_metadata_folder(connection_group_folder, user_input, panel)
                 
                 # Create all metadata files
@@ -282,11 +300,12 @@ class MetaNewConnGroup(sublime_plugin.WindowCommand):
 
 class MetaSelectConnection(sublime_plugin.WindowCommand):
     def run(self):
-        # Get list of folders in metastore directory
+        # Get list of folders in DBMS directory
+        dbms_path = get_dbms_path()
         folder_lst = []
         folder_names = []
-        for item in os.listdir(metastore_path):
-            item_path = os.path.join(metastore_path, item)
+        for item in os.listdir(dbms_path):
+            item_path = os.path.join(dbms_path, item)
             if os.path.isdir(item_path):
                 description_path = os.path.join(item_path, "description.txt")
                 try:
@@ -306,8 +325,8 @@ class MetaSelectConnection(sublime_plugin.WindowCommand):
         
         selected_folder = self.folder_names[index]
         
-        # Read SQL.custom-completions
-        sql_completions_path = os.path.join(metastore_path, "SQL.custom-completions")
+        # Read SQL.settings
+        sql_completions_path = "SQL.settings"
         with open(sql_completions_path, "r") as f:
             sql_completions = json.loads(f.read())
         
@@ -329,7 +348,7 @@ class MetaUpdateConnectionGroup(MetaSelectConnection):
             return
         
         select = self.folder_names[index]
-        connection_group_folder = os.path.join(metastore_path, select)
+        connection_group_folder = os.path.join(get_dbms_path(), select)
         component_file_path = os.path.join(connection_group_folder, "conn-group-component.txt")
         
         # Read the component file
@@ -421,7 +440,7 @@ class MetaAddTableInConnGroup(MetaSelectConnection):
         
         # Set the selected connection group folder
         self.folder = self.folder_names[index]
-        self.connection_group_folder = os.path.join(metastore_path, self.folder)
+        self.connection_group_folder = os.path.join(get_dbms_path(), self.folder)
         
         # Show input panel for table to add
         input_panel = self.window.show_input_panel(
@@ -640,7 +659,7 @@ class MetaDeleteConnection(MetaSelectConnection):
             return
 
         select = self.folder_names[index]
-        connection_group_folder = os.path.join(metastore_path, select)
+        connection_group_folder = os.path.join(get_dbms_path(), select)
 
         # Remove the connection group folder
         shutil.rmtree(connection_group_folder)
@@ -653,14 +672,15 @@ class MetaDeleteConnection(MetaSelectConnection):
 
 class MetaBrowseConnection(sublime_plugin.TextCommand):
     def run(self, edit):
-        # 1. Read current_selection from SQL.custom-completions
-        with open(metastore_path + "\\SQL.custom-completions", "r") as f:
+        # 1. Read current_selection from SQL.settings
+        with open("SQL.settings", "r") as f:
             js = json.loads(f.read())
         
         current_selection = js["current_selection"]
         
-        # 2. Open current_selection folder under metastore_path
-        current_folder_path = os.path.join(metastore_path, current_selection)
+        # 2. Open current_selection folder under DBMS folder
+        dbms_path = get_dbms_path()
+        current_folder_path = os.path.join(dbms_path, current_selection)
         
         # 3. Read drop-down.txt and split by newline, clean up empty strings
         drop_down_file_path = os.path.join(current_folder_path, "drop-down.txt")
@@ -715,23 +735,24 @@ class MetaImportLocalConnection(sublime_plugin.WindowCommand):
         # Get the folder name from the path
         folder_name = os.path.basename(path)
         
-        # Check if folder already exists in metastore
-        destination_path = os.path.join(metastore_path, folder_name)
+        # Check if folder already exists in DBMS folder
+        dbms_path = get_dbms_path()
+        destination_path = os.path.join(dbms_path, folder_name)
         if os.path.exists(destination_path):
             sublime.message_dialog(
                 f"Connection group '{folder_name}' already exists in metastore. Please choose a different folder or rename the existing one."
             )
             return
         
-        # Copy everything from source folder to metastore
+        # Copy everything from source folder to DBMS folder
         try:
             shutil.copytree(self.source_path, destination_path)
         except Exception as e:
             sublime.message_dialog(f"Error copying folder: {str(e)}")
             return
         
-        # Update SQL.custom-completions current_selection
-        sql_completions_path = os.path.join(metastore_path, "SQL.custom-completions")
+        # Update SQL.settings current_selection
+        sql_completions_path = "SQL.settings"
         try:
             with open(sql_completions_path, "r") as f:
                 sql_completions = json.loads(f.read())
@@ -741,7 +762,7 @@ class MetaImportLocalConnection(sublime_plugin.WindowCommand):
             with open(sql_completions_path, "w") as f:
                 f.write(json.dumps(sql_completions))
         except Exception as e:
-            sublime.message_dialog(f"Error updating SQL.custom-completions: {str(e)}")
+            sublime.message_dialog(f"Error updating SQL.settings: {str(e)}")
             return
 
         # Run meta_select_connection to refresh the selection
@@ -759,7 +780,7 @@ class MetaRemoveTableInConnGroup(MetaSelectConnection):
 
         # Get selected connection group folder name
         select = self.folder_names[index]
-        connection_group_folder = os.path.join(metastore_path, select)
+        connection_group_folder = os.path.join(get_dbms_path(), select)
         
         # Read db-schema-tbl.json
         db_schema_tbl_path = os.path.join(connection_group_folder, "db-schema-tbl.json")

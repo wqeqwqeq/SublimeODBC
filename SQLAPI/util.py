@@ -35,11 +35,12 @@ def crypt(string, encoding="ascii", encode=True):
     return base64_bytes.decode(encoding)
 
 
-def get_uid_pw():
+def get_uid_pw(env_user_var, env_pw_var):
     """Get encoded username and password from environment variables and decode them"""
-    user = os.getenv("SQLUSERNAMEENCODED")
-    assert user is not None, "SQL Server uid and pw not set, run setup_local in cmd"
-    pw = os.getenv("SQLPWENCODED")
+    user = os.getenv(env_user_var)
+    assert user is not None, f"{env_user_var} not set, run setup_local in cmd"
+    pw = os.getenv(env_pw_var)
+    assert pw is not None, f"{env_pw_var} not set, run setup_local in cmd"
     return crypt(user, encode=False), crypt(pw, encode=False)
 
 
@@ -58,4 +59,39 @@ def load_config(config_path="config.json", strict=True):
         if strict:
             raise ValueError(f"Invalid JSON in config file '{config_path}'")
         else:
-            return {'db_type': 'sqlserver'} 
+            return {'db_type': 'sqlserver'}
+
+def load_settings(settings_path="SQL.settings"):
+    try:
+        with open(settings_path, "r") as f:
+            settings = json.loads(f.read())
+        return settings
+    except Exception as e:
+        raise ValueError(f"Error loading {settings_path}: {str(e)}")
+
+
+def credential_set(show_msg=True):
+    # Load SQL.settings
+    try:
+        settings = load_settings()
+        current_dbms = settings.get("current_dbms", "").upper()
+    except Exception as e:
+        if show_msg:
+            sublime.message_dialog(f"Error loading SQL.settings: {str(e)}")
+        return False
+    
+    # Construct environment variable names based on current DBMS
+    env_user_var = f"{current_dbms}USERNAMEENCODED"
+    env_pw_var = f"{current_dbms}PWENCODED"
+    
+    if (
+        os.getenv(env_user_var) is not None
+        and os.getenv(env_pw_var) is not None
+    ):
+        if show_msg:
+            sublime.message_dialog(f"{current_dbms} username and password has been set up!")
+        return True
+    else:
+        if show_msg:
+            sublime.message_dialog(f"{current_dbms} username or password not set up\nUse ctrl+e,ctrl+p to setup")
+        return False 

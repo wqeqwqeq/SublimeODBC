@@ -1,0 +1,1 @@
+Completions for DB `example_db, sample_db`, 150 columns in total 

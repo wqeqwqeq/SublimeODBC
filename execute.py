@@ -8,7 +8,7 @@ import ctypes
 import csv
 
 
-from SQLAPI.util import load_package_path
+from SQLAPI.util import load_package_path, credential_set,load_settings
 from SQLAPI.connect import ConnectorODBC
 from tabulate import tabulate
 import sqlparse
@@ -30,7 +30,7 @@ class SoStartConn(sublime_plugin.WindowCommand):
         global conn
         
         # Check if environment variables are set
-        if os.getenv("SQLUSERNAMEENCODED") and os.getenv("SQLPWENCODED"):
+        if credential_set(show_msg=False):
             if conn is not None:
                 sublime.status_message("ODBC connection already established")
                 return
@@ -50,16 +50,17 @@ class SoStartConn(sublime_plugin.WindowCommand):
             
             sublime.status_message("Starting ODBC connection...")
         else:
-            sublime.error_message(
-                "Environment variables SQLUSERNAMEENCODED and SQLPWENCODED are not set. "
-                "Please set these variables before starting the connection."
-            )
+            settings = load_settings()
+            current_dbms = settings.get("current_dbms", "")
+            sublime.message_dialog(f"Default DBMS is {current_dbms}\n{current_dbms} Username or password not setup\nSelect DBMS to set up username and password")
+            self.window.run_command("meta_password")
 
     def get_connect(self):
         """Establish connection to database"""
         try:
             global conn
-            conn = ConnectorODBC()  
+            conn = ConnectorODBC() 
+            sublime.status_message(f"ODBC connection established")
             print(f"Detected username and pw, Conn is set , {conn} ")
         finally:
             pass
@@ -794,4 +795,18 @@ class TblTranspose(sublime_plugin.WindowCommand):
             name="Transpose",
         )
         t1.start()
+
+
+class SoRemoveCacheFile(sublime_plugin.WindowCommand):
+    def run(self):
+        """Remove the cache query JSON file from the metastore folder"""
+        try:
+            # Get the cache file path from the global cache_path variable
+            if os.path.exists(cache_path):
+                os.remove(cache_path)
+                sublime.status_message("Cache query file removed successfully")
+            else:
+                sublime.status_message("Cache query file does not exist")
+        except Exception as e:
+            sublime.error_message(f"Error removing cache file: {str(e)}")
 

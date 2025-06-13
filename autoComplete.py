@@ -202,11 +202,12 @@ class EventListener(sublime_plugin.EventListener):
 
     def load_js(self, file):
          
-        with open(f"{js_path}/SQL.custom-completions", "r") as f:
+        with open("SQL.settings", "r") as f:
             custom_completions = json.loads(f.read())
             current_selection = custom_completions.get("current_selection")
+            current_dbms = custom_completions.get("current_dbms")
 
-        auto_completion_path = os.path.join(js_path, current_selection, f"{file}.json")
+        auto_completion_path = os.path.join(js_path, current_dbms, current_selection, f"{file}.json")
 
         with open(auto_completion_path, "r") as f:
             schema = json.loads(f.read())

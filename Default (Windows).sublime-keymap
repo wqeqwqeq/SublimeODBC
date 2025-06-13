@@ -27,6 +27,10 @@
         "command": "sa_format"
     },
     {
+        "keys": ["ctrl+e", "ctrl+c"],
+        "command": "sa_clear_cache"
+    },
+    {
         "keys": ["ctrl+u", "ctrl+p"],
         "command": "upload_csv_to_table"
     },
@@ -43,6 +47,14 @@
         "args" : {
             "include_dtype": "True"
         }
+    },
+    {
+        "keys": ["ctrl+m", "ctrl+p"],
+        "command": "meta_password",
+    },
+    {
+        "keys": ["ctrl+m", "ctrl+c"],
+        "command": "meta_choose_connection",
     },
     {
         "keys": ["ctrl+m", "ctrl+d"],
