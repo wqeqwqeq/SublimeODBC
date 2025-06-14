@@ -28,7 +28,8 @@ class SoStartConn(sublime_plugin.WindowCommand):
     def run(self):
         """Initialize ODBC connection when command is triggered"""
         global conn
-        
+        settings = load_settings()
+        self.current_dbms = settings.get("current_dbms", "")
         # Check if environment variables are set
         if credential_set(show_msg=False):
             if conn is not None:
@@ -50,9 +51,8 @@ class SoStartConn(sublime_plugin.WindowCommand):
             
             sublime.status_message("Starting ODBC connection...")
         else:
-            settings = load_settings()
-            current_dbms = settings.get("current_dbms", "")
-            sublime.message_dialog(f"Default DBMS is {current_dbms}\n{current_dbms} Username or password not setup\nSelect DBMS to set up username and password")
+
+            sublime.message_dialog(f"Default DBMS is {self.current_dbms}\n{self.current_dbms} Username or password not setup\nSelect DBMS to set up username and password")
             self.window.run_command("meta_password")
 
     def get_connect(self):
@@ -60,7 +60,7 @@ class SoStartConn(sublime_plugin.WindowCommand):
         try:
             global conn
             conn = ConnectorODBC() 
-            sublime.status_message(f"ODBC connection established")
+            sublime.status_message(f"ODBC connection established for {self.current_dbms}")
             print(f"Detected username and pw, Conn is set , {conn} ")
         finally:
             pass
@@ -649,7 +649,7 @@ class SoRestartConnection(sublime_plugin.TextCommand):
         sublime.message_dialog("Restarted connection!")
         print("Before:", self.conn1, "\n", "After:", conn2)
 
-
+# TODO: print message has issue 
 class SoTblToCsv(sublime_plugin.WindowCommand):
     def run(self, per_chunk=10000):
         def main(self, per_chunk):
@@ -668,7 +668,8 @@ class SoTblToCsv(sublime_plugin.WindowCommand):
                 "append", {"characters": f"Executing Query to export...\n {query}\n"}
             )
             start = time.time()
-            conn.execute(query)
+            cursor = conn.cursor
+            cursor.execute(query)
             end = time.time() - start
             self.panel.run_command(
                 "append",
@@ -677,7 +678,7 @@ class SoTblToCsv(sublime_plugin.WindowCommand):
                 },
             )
 
-            total = conn.cursor.rowcount
+            total = cursor.rowcount
             boo = sublime.ok_cancel_dialog(
                 msg=f"Total row count is {total}\n\n\nQuery Executed:\n {query}",
                 ok_title="Lets Parse!",
@@ -690,7 +691,7 @@ class SoTblToCsv(sublime_plugin.WindowCommand):
             final = []
 
             while True:
-                chunk = conn.cursor.fetchmany(per_chunk)
+                chunk = cursor.fetchmany(per_chunk)
                 if len(chunk) == 0:
                     self.panel.run_command("append", {"characters": f"Fetch Done\n"})
                     break
@@ -702,7 +703,7 @@ class SoTblToCsv(sublime_plugin.WindowCommand):
                 )
 
             result2 = [list(i) for i in final]
-            cols = [i[0] for i in conn.cursor.description]
+            cols = [i[0] for i in cursor.description]
             self.panel.run_command(
                 "append",
                 {
@@ -758,20 +759,21 @@ class TblTranspose(sublime_plugin.WindowCommand):
                 "append", {"characters": f"Executing Query to transpose......;\n"}
             )
             start = time.time()
-            conn.execute(query)
+            cursor = conn.cursor
+            cursor.execute(query)
             end = time.time() - start
 
-            if conn.cursor.rowcount >= limit:
+            if cursor.rowcount >= limit:
                 self.panel.run_command(
                     "append",
                     {
-                        "characters": f"Number of rows in cursor is {conn.cursor.rowcount}, limit is {limit}\nTranspose rows out of bound!!! "
+                        "characters": f"Number of rows in cursor is {cursor.rowcount}, limit is {limit}\nTranspose rows out of bound!!! "
                     },
                 )
                 return
 
-            lst = conn.cursor.fetchall()
-            cols = [ele[0] for ele in conn.cursor.description]
+            lst = cursor.fetchall()
+            cols = [ele[0] for ele in cursor.description]
             result2 = [ele for ele in zip(cols, *lst) if len(set(ele[1:])) != 1]
             l = len(lst)
             column = ["Column"] + [f"Row_{i}" for i in range(1, l + 1)]

@@ -1,8 +1,8 @@
 [
     {
-        "caption": "SublimeODBC",
+        "caption": "SQLOdbc",
         "mnemonic": "S",
-        "id": "SublimeODBC",
+        "id": "SQLOdbc",
         "children": [
             {
                 "caption": "Connection",
@@ -10,6 +10,10 @@
                     {
                         "caption": "Start Connection",
                         "command": "so_start_conn"
+                    },
+                                        {
+                        "caption": "Choose DBMS Connection",
+                        "command": "meta_choose_connection"
                     },
                     {
                         "caption": "Run SQL Command",
@@ -27,8 +31,20 @@
                         "command": "sa_format"
                     },
                     {
-                        "caption": "Upload CSV to Table",
-                        "command": "upload_csv_to_table"
+                        "caption": "Clear Cache",
+                        "command": "sa_clear_cache"
+                    },
+                    {
+                        "caption": "Interrupt Query",
+                        "command": "sa_interrupt_query"
+                    },
+                    {
+                        "caption": "Restart Connection",
+                        "command": "so_restart_connection"
+                    },
+                    {
+                        "caption": "Remove Cache File",
+                        "command": "so_remove_cache_file"
                     }
                 ]
             },
@@ -50,11 +66,15 @@
                         }
                     },
                     {
-                        "caption": "Delete Connection",
+                        "caption": "Password",
+                        "command": "meta_password"
+                    },
+                    {
+                        "caption": "Delete Connection Group",
                         "command": "meta_delete_connection"
                     },
                     {
-                        "caption": "Browse Connection",
+                        "caption": "Browse Cols in Conn Group",
                         "command": "meta_browse_connection"
                     },
                     {
@@ -79,14 +99,43 @@
                         }
                     },
                     {
-                        "caption": "Select Connection",
+                        "caption": "Select Connection Group",
                         "command": "meta_select_connection"
+                    },
+                    {
+                        "caption": "Select Query split by Semicolon",
+                        "command": "expand_selection_to_semicolon",
+                        "args": {
+                            "mode": "select"
+                        }
                     }
                 ]
             },
             {
-                "caption": "Layout",
+                "caption": "UI",
                 "children": [
+                    {
+                        "caption": "Rename View",
+                        "command": "rename_view"
+                    },
+                    {
+                        "caption": "Zoom In",
+                        "command": "view_zoom",
+                        "args": {
+                            "zoomin": true
+                        }
+                    },
+                    {
+                        "caption": "Zoom Out",
+                        "command": "view_zoom",
+                        "args": {
+                            "zoomin": false
+                        }
+                    },
+                    {
+                        "caption": "Sort Tabs in Order",
+                        "command": "sort_tabs_in_order"
+                    },
                     {
                         "caption": "Split Right",
                         "command": "set_layout",
@@ -112,20 +161,41 @@
                         }
                     },
                     {
-                        "caption": "Resize Window Group",
+                        "caption": "Max/Min Query Result Panel",
                         "command": "resize_window_group"
                     }
                 ]
             },
             {
-                "caption": "Selection",
-                "children": [
+                "caption": "View",
+                "children":[
                     {
-                        "caption": "Expand Selection to Semicolon",
-                        "command": "expand_selection_to_semicolon",
+                        "caption": "View KeyMap",
+                        "command": "view_config",
                         "args": {
-                            "mode": "select"
+                            "read_only": true,
+                            "file": "keymap"
                         }
+                    },
+                    {
+                        "caption": "View Setting",
+                        "command": "view_config",
+                        "args": {
+                            "read_only": true,
+                            "file": "setting"
+                        }
+                    },
+                    {
+                        "caption": "View Current Conn group Schema",
+                        "command": "view_config",
+                        "args": {
+                            "read_only": true,
+                            "file": "schema"
+                        }
+                    },
+                    {
+                        "caption": "View Current Conn",
+                        "command": "view_config"
                     }
                 ]
             }

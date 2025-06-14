@@ -8,7 +8,7 @@ import sys
 
 def load_package_path():
     package_path = sublime.packages_path()
-    package_name = "SublimeODBC"
+    package_name = "SQLOdbc"
 
     cache_path = os.path.join(
         package_path, package_name, "metastore", "cache_query.json"

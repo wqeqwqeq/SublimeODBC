@@ -5,19 +5,7 @@ import json
 from SQLAPI.util import load_package_path  
 import re 
 
-map2 = {
-    1: "text",
-    2: "number",
-    3: "timestamp_ntz",
-    4: "date",
-    5: "float",
-    6: "timestamp_tz",
-    7: "time",
-    8: "binary",
-    9: "variant",
-    10: "timestamp_ltz",
-    11: "boolean",
-}
+
 
 cache_path, lib_path, plugin_path, js_path = load_package_path()
 
@@ -169,7 +157,6 @@ class EventListener(sublime_plugin.EventListener):
             ]
 
             for col, dtype in cols.items():
-                dtype = map2.get(dtype) if map2.get(dtype) else dtype
                 txt_show = db + "." + schema + "." + tbl + "." + col + "\t" + dtype
                 txt_fill = f"SELECT a.{col}$0 FROM {db}.{schema}.{tbl} as a;"
                 self.completions.append((txt_show, txt_fill))

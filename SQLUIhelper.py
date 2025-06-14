@@ -4,17 +4,27 @@ import os
 from operator import itemgetter
 
 package_path = sublime.packages_path()
-plugin_path = f"{package_path}\\Sublime_Teradata_Plugin"
+plugin_path = f"{package_path}\\SQLOdbc"
 
 
-class ViewKeymap(sublime_plugin.WindowCommand):
-    def run(self, read_only):
+class ViewConfig(sublime_plugin.WindowCommand):
+    def run(self, read_only=True, file=None):
+        if file == 'keymap':
+            self._open_keymap(read_only)
+        elif file == 'setting':
+            self._open_settings(read_only)
+        elif file == 'schema':
+            self._open_schema(read_only)
+        elif file is None:
+            self._show_current_settings()
+        else:
+            sublime.error_message("Invalid file type specified")
+
+    def _open_keymap(self, read_only):
         if read_only:
-
             with open(f"{plugin_path}\\Default (Windows).sublime-keymap", "r") as f:
                 file = f.read()
             self.window.new_file()
-            # self.window.open_file(f"{plugin_path}\\Default (Windows).sublime-keymap")
             panel = self.window.active_view()
             panel.set_name("Default (Windows).sublime-keymap (Read-Only)")
             self.window.run_command("insert", {"characters": file})
@@ -26,7 +36,72 @@ class ViewKeymap(sublime_plugin.WindowCommand):
             self.window.run_command(
                 "open_file",
                 args={
-                    "file": "${packages}/Sublime_Teradata_Plugin/Default (Windows).sublime-keymap"
+                    "file": "${packages}/SQLOdbc/Default (Windows).sublime-keymap"
+                },
+            )
+
+    def _open_settings(self, read_only):
+        if read_only:
+            with open(f"{plugin_path}\\SQL.settings", "r") as f:
+                file = f.read()
+            self.window.new_file()
+            panel = self.window.active_view()
+            panel.set_name("SQL.settings (Read-Only)")
+            self.window.run_command("insert", {"characters": file})
+            panel.assign_syntax("Packages/JSON/JSON.sublime-syntax")
+            panel.window().run_command("js_format")
+            panel.set_read_only(True)
+            panel.set_scratch(True)
+        else:
+            self.window.run_command(
+                "open_file",
+                args={
+                    "file": "${packages}/SQLOdbc/SQL.settings"
+                },
+            )
+
+    def _show_current_settings(self):
+        with open(f"{plugin_path}\\SQL.settings", "r") as f:
+            settings = sublime.decode_value(f.read())
+        
+        current_selection = settings.get("current_selection", "")
+        current_dbms = settings.get("current_dbms", "")
+        message = f"Current Connection Group: {current_selection}\nCurrent DBMS: {current_dbms}"
+        sublime.message_dialog(message)
+
+    def _open_schema(self, read_only):
+        # First read SQL.settings to get current selection and dbms
+        with open(f"{plugin_path}\\SQL.settings", "r") as f:
+            settings = sublime.decode_value(f.read())
+        
+        current_selection = settings.get("current_selection", "")
+        current_dbms = settings.get("current_dbms", "")
+        
+        if not current_selection or not current_dbms:
+            sublime.error_message("Current selection or DBMS not set in SQL.settings")
+            return
+
+        schema_path = f"{plugin_path}\\metastore\\{current_dbms}\\{current_selection}\\db-schema-tbl-col.json"
+        
+        if read_only:
+            try:
+                with open(schema_path, "r") as f:
+                    file = f.read()
+                self.window.new_file()
+                panel = self.window.active_view()
+                panel.set_name(f"Schema - {current_selection} ({current_dbms}) (Read-Only)")
+                self.window.run_command("insert", {"characters": file})
+                panel.assign_syntax("Packages/JSON/JSON.sublime-syntax")
+                panel.window().run_command("js_format")
+                panel.set_read_only(True)
+                panel.set_scratch(True)
+            except FileNotFoundError:
+                sublime.error_message(f"Schema file not found for {current_selection} in {current_dbms}")
+        else:
+            self.window.run_command(
+                "open_file",
+                args={
+                    "file": schema_path
                 },
             )
 

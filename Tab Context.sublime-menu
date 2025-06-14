@@ -1,0 +1,19 @@
+[
+    {
+        "caption": "SQLOdbc Tab Operations",
+        "children": [
+            {
+                "caption": "Rename Tab",
+                "command": "rename_view"
+            },
+            {
+                "caption": "Export to CSV",
+                "command": "so_tbl_to_csv"
+            },
+            {
+                "caption": "Transpose Table",
+                "command": "tbl_transpose"
+            }
+        ]
+    }
+] 

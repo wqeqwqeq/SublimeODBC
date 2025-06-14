@@ -1,1 +1,10 @@
-{"hr_management": {"dbo": {}, "hr": {}, "payroll": {}}, "inventory_system": {"dbo": {}, "warehouse": {}, "procurement": {}}} 
+{
+    "hr_management": {
+        "hr": {},
+        "payroll": {}
+    },
+    "inventory_system": {
+        "warehouse": {},
+        "procurement": {}
+    }
+}

@@ -4,9 +4,9 @@ import sys
 
 
 package_path = sublime.packages_path()
-sys_path = f"{package_path}\\SublimeODBC\\lib"
-sys_path2 = f"{package_path}\\SublimeODBC"
-sys_path3 = f"{package_path}\\SublimeODBC\\SQLAPI"
+sys_path = f"{package_path}\\SQLOdbc\\lib"
+sys_path2 = f"{package_path}\\SQLOdbc"
+sys_path3 = f"{package_path}\\SQLOdbc\\SQLAPI"
 
 
 if sys_path not in sys.path:

@@ -1,127 +1,104 @@
 [
-    
-    // SQLQueryHelper.py commands
     {
-        "keys": ["ctrl+q"],
-        "command": "expand_selection_to_semicolon",
-        "args": {
-            "mode": "select"
-        }
-    },
-    {
-        "keys": ["ctrl+e", "ctrl+b"],
-        "command": "sa_format"
-    },
-    
-    // SQLExecute.py commands
-    {
-        "keys": ["ctrl+e", "ctrl+o"],
+        "caption": "SQLOdbc: Start Connection",
         "command": "so_start_conn"
     },
     {
-        "keys": ["ctrl+e", "ctrl+e"],
+        "caption": "SQLOdbc: Run SQL Query",
         "command": "so_run_sql_cmd",
         "args": {
             "limit": 300,
             "number_of_cache_query": 20,
             "timeout": 5,
             "output_in_panel": false,
-            "queries":null
+            "queries": null
         }
     },
     {
-        "keys": ["ctrl+e", "ctrl+c"],
+        "caption": "SQLOdbc: Format SQL",
+        "command": "sa_format"
+    },
+    {
+        "caption": "SQLOdbc: Clear Query Cache",
         "command": "sa_clear_cache"
     },
     {
-        "keys": ["ctrl+e", "ctrl+i"],
+        "caption": "SQLOdbc: Interrupt Query",
         "command": "sa_interrupt_query"
     },
     {
-        "keys": ["ctrl+e", "ctrl+r"],
+        "caption": "SQLOdbc: Restart Connection",
         "command": "so_restart_connection"
     },
     {
-        "keys": ["ctrl+e", "ctrl+v"],
+        "caption": "SQLOdbc: Export to CSV",
         "command": "so_tbl_to_csv"
     },
     {
-        "keys": ["ctrl+e", "ctrl+p"],
+        "caption": "SQLOdbc: Transpose Table",
         "command": "tbl_transpose"
     },
     {
-        "keys": ["ctrl+e", "ctrl+f"],
+        "caption": "SQLOdbc: Remove Cache File",
         "command": "so_remove_cache_file"
     },
-
-    // SQLMetaData.py commands
     {
-        "keys": ["ctrl+m", "ctrl+i"],
+        "caption": "SQLOdbc: Initialize Metadata",
         "command": "meta_init",
-        "args" : {
+        "args": {
             "include_dtype": "True"
         }
     },
     {
-        "keys": ["ctrl+m", "ctrl+n"],
+        "caption": "SQLOdbc: New Connection Group",
         "command": "meta_new_conn_group",
-        "args" : {
+        "args": {
             "include_dtype": "True"
         }
     },
     {
-        "keys": ["ctrl+m", "ctrl+p"],
+        "caption": "SQLOdbc: Set Password",
         "command": "meta_password"
     },
     {
-        "keys": ["ctrl+m", "ctrl+c"],
+        "caption": "SQLOdbc: Choose Connection",
         "command": "meta_choose_connection"
     },
     {
-        "keys": ["ctrl+m", "ctrl+d"],
+        "caption": "SQLOdbc: Delete Connection",
         "command": "meta_delete_connection"
     },
     {
-        "keys": ["ctrl+m", "ctrl+b"],
+        "caption": "SQLOdbc: Browse Connection",
         "command": "meta_browse_connection"
     },
     {
-        "keys": ["ctrl+m", "ctrl+u"],
+        "caption": "SQLOdbc: Update Connection Group",
         "command": "meta_update_connection_group",
-        "args" : {
+        "args": {
             "include_dtype": "True"
         }
     },
     {
-        "keys": ["ctrl+m", "ctrl+a"],
+        "caption": "SQLOdbc: Add Table to Group",
         "command": "meta_add_table_in_conn_group",
-        "args" : {
+        "args": {
             "include_dtype": "True"
         }
     },
     {
-        "keys": ["ctrl+m", "ctrl+r"],
+        "caption": "SQLOdbc: Remove Table from Group",
         "command": "meta_remove_table_in_conn_group",
-        "args" : {
+        "args": {
             "include_dtype": "True"
         }
     },
-    // {
-    //     "keys": ["ctrl+m", "ctrl+l"],
-    //     "command": "meta_import_local_connection"
-    // },
     {
-        "keys": ["ctrl+m", "ctrl+s"],
+        "caption": "SQLOdbc: Select Connection",
         "command": "meta_select_connection"
     },
-
-    // SQLUiHelper.py commands
-    // {
-    //     "keys": ["ctrl+u", "ctrl+p"],
-    //     "command": "upload_csv_to_table"
-    // },
     {
-        "keys": ["ctrl+u", "ctrl+k"],
+        "caption": "SQLOdbc: View Keymap",
         "command": "view_config",
         "args": {
             "read_only": true,
@@ -129,7 +106,7 @@
         }
     },
     {
-        "keys": ["ctrl+u", "ctrl+s"],
+        "caption": "SQLOdbc: View Settings",
         "command": "view_config",
         "args": {
             "read_only": true,
@@ -137,7 +114,7 @@
         }
     },
     {
-        "keys": ["ctrl+u", "ctrl+c"],
+        "caption": "SQLOdbc: View Current Schema",
         "command": "view_config",
         "args": {
             "read_only": true,
@@ -145,37 +122,37 @@
         }
     },
     {
-        "keys": ["ctrl+u", "ctrl+u"],
+        "caption": "SQLOdbc: View Current Connection",
         "command": "view_config"
     },
     {
-        "keys": ["ctrl+u", "ctrl+r"],
+        "caption": "SQLOdbc: Rename View",
         "command": "rename_view"
     },
     {
-        "keys": ["ctrl+u", "ctrl+z"],
+        "caption": "SQLOdbc: Zoom In",
         "command": "view_zoom",
         "args": {
             "zoomin": true
         }
     },
     {
-        "keys": ["ctrl+u", "ctrl+x"],
+        "caption": "SQLOdbc: Zoom Out",
         "command": "view_zoom",
         "args": {
             "zoomin": false
         }
     },
     {
-        "keys": ["ctrl+u", "ctrl+t"],
+        "caption": "SQLOdbc: Sort Tabs",
         "command": "sort_tabs_in_order"
     },
     {
-        "keys": ["f1"],
+        "caption": "SQLOdbc: Resize Window Group",
         "command": "resize_window_group"
     },
     {
-        "keys": ["ctrl+alt+right"],
+        "caption": "SQLOdbc: Split Right",
         "command": "set_layout",
         "args": {
             "cols": [0.0, 0.55, 1.0],
@@ -187,7 +164,7 @@
         }
     },
     {
-        "keys": ["ctrl+alt+down"],
+        "caption": "SQLOdbc: Split Down",
         "command": "set_layout",
         "args": {
             "cols": [0.0, 1.0],
@@ -198,4 +175,4 @@
             ]
         }
     }
-]
+] 

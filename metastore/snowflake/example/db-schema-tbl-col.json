@@ -1,1 +1,84 @@
-{"example_db": {"public": {"users": {"id": "INTEGER", "name": "VARCHAR", "email": "VARCHAR", "created_at": "TIMESTAMP"}, "products": {"id": "INTEGER", "name": "VARCHAR", "price": "DECIMAL", "in_stock": "BOOLEAN"}, "orders": {"id": "INTEGER", "user_id": "INTEGER", "order_date": "TIMESTAMP", "total_amount": "DECIMAL"}}, "staging": {"raw_data": {"id": "INTEGER", "data": "VARCHAR", "processed": "BOOLEAN"}, "temp_tables": {"id": "INTEGER", "name": "VARCHAR"}}, "production": {"customer_data": {"id": "INTEGER", "name": "VARCHAR", "address": "VARCHAR"}, "sales_data": {"id": "INTEGER", "product_id": "INTEGER", "quantity": "INTEGER", "sale_date": "TIMESTAMP"}}}, "sample_db": {"analytics": {"metrics": {"id": "INTEGER", "metric_name": "VARCHAR", "value": "DECIMAL"}, "reports": {"id": "INTEGER", "report_name": "VARCHAR", "generated_at": "TIMESTAMP"}}, "reporting": {"daily_stats": {"date": "DATE", "total_sales": "DECIMAL", "total_orders": "INTEGER"}, "monthly_stats": {"month": "DATE", "revenue": "DECIMAL", "customers": "INTEGER"}}, "temp": {"temp_table1": {"id": "INTEGER", "data": "VARCHAR"}, "temp_table2": {"id": "INTEGER", "name": "VARCHAR"}}}} 
+{
+    "example_db": {
+        "public": {
+            "users": {
+                "id": "INTEGER",
+                "name": "VARCHAR",
+                "email": "VARCHAR",
+                "created_at": "TIMESTAMP"
+            },
+            "products": {
+                "id": "INTEGER",
+                "name": "VARCHAR",
+                "price": "DECIMAL",
+                "in_stock": "BOOLEAN"
+            },
+            "orders": {
+                "id": "INTEGER",
+                "user_id": "INTEGER",
+                "order_date": "TIMESTAMP",
+                "total_amount": "DECIMAL"
+            }
+        },
+        "staging": {
+            "raw_data": {
+                "id": "INTEGER",
+                "data": "VARCHAR",
+                "processed": "BOOLEAN"
+            },
+            "temp_tables": {
+                "id": "INTEGER",
+                "name": "VARCHAR"
+            }
+        },
+        "production": {
+            "customer_data": {
+                "id": "INTEGER",
+                "name": "VARCHAR",
+                "address": "VARCHAR"
+            },
+            "sales_data": {
+                "id": "INTEGER",
+                "product_id": "INTEGER",
+                "quantity": "INTEGER",
+                "sale_date": "TIMESTAMP"
+            }
+        }
+    },
+    "sample_db": {
+        "analytics": {
+            "metrics": {
+                "id": "INTEGER",
+                "metric_name": "VARCHAR",
+                "value": "DECIMAL"
+            },
+            "reports": {
+                "id": "INTEGER",
+                "report_name": "VARCHAR",
+                "generated_at": "TIMESTAMP"
+            }
+        },
+        "reporting": {
+            "daily_stats": {
+                "date": "DATE",
+                "total_sales": "DECIMAL",
+                "total_orders": "INTEGER"
+            },
+            "monthly_stats": {
+                "month": "DATE",
+                "revenue": "DECIMAL",
+                "customers": "INTEGER"
+            }
+        },
+        "temp": {
+            "temp_table1": {
+                "id": "INTEGER",
+                "data": "VARCHAR"
+            },
+            "temp_table2": {
+                "id": "INTEGER",
+                "name": "VARCHAR"
+            }
+        }
+    }
+}
