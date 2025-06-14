@@ -1,0 +1,31 @@
+{
+    "current_selection": "all",
+    "current_dbms": "snowflake",
+    "fileExtensions": [
+        "sql"
+    ],
+    "separator": ".",
+    "DBMS_Setting": {
+        "sqlserver": {
+            "connection_string": "Driver={ODBC Driver 18 for SQL Server};Server=tcp:h1b.database.windows.net,1433;Database=h1b;Uid={SQL_USERNAME_ENCODED};Pwd={SQL_PW_ENCODED};Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;",
+            "database_queries": {
+                "get_all_columns": "SELECT Table_Catalog , TABLE_SCHEMA , TABLE_NAME , COLUMN_NAME , DATA_TYPE  FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA NOT IN ('sys', 'INFORMATION_SCHEMA') ORDER BY TABLE_SCHEMA, TABLE_NAME, ORDINAL_POSITION",
+                "get_all_columns_under_db": "SELECT Table_Catalog , TABLE_SCHEMA , TABLE_NAME , COLUMN_NAME , DATA_TYPE  FROM INFORMATION_SCHEMA.COLUMNS WHERE Table_Catalog = '{}' AND TABLE_SCHEMA NOT IN ('sys', 'INFORMATION_SCHEMA') ORDER BY TABLE_SCHEMA, TABLE_NAME, ORDINAL_POSITION",
+                "get_all_columns_under_schema": "SELECT Table_Catalog , TABLE_SCHEMA , TABLE_NAME , COLUMN_NAME , DATA_TYPE  FROM INFORMATION_SCHEMA.COLUMNS WHERE Table_Catalog = '{}' AND TABLE_SCHEMA = '{}' AND TABLE_SCHEMA NOT IN ('sys', 'INFORMATION_SCHEMA') ORDER BY TABLE_SCHEMA, TABLE_NAME, ORDINAL_POSITION",
+                "get_all_columns_under_table": "SELECT Table_Catalog , TABLE_SCHEMA , TABLE_NAME , COLUMN_NAME , DATA_TYPE  FROM INFORMATION_SCHEMA.COLUMNS WHERE Table_Catalog = '{}' AND TABLE_SCHEMA = '{}' AND TABLE_NAME = '{}' AND TABLE_SCHEMA NOT IN ('sys', 'INFORMATION_SCHEMA') ORDER BY TABLE_SCHEMA, TABLE_NAME, ORDINAL_POSITION"
+            }
+        },
+        "snowflake": {
+            "connection_string": "Driver={SnowflakeDSIIDriver};Server=HTQEADI-ZNA89116.snowflakecomputing.com;Database=<none selected>;uid={SQL_USERNAME_ENCODED};pwd={SQL_PW_ENCODED}",
+            "database_queries": {
+                "get_all_columns": {
+                    "list_db": "show databases;SELECT \"name\" FROM TABLE(RESULT_SCAN(LAST_QUERY_ID()));",
+                    "get_all_columns_under_db": "select table_catalog, table_schema, table_name, column_name, data_type from {}.information_schema.columns where table_schema <> 'INFORMATION_SCHEMA';"
+                },
+                "get_all_columns_under_db": "SELECT Table_Catalog , TABLE_SCHEMA , TABLE_NAME , COLUMN_NAME , DATA_TYPE  FROM {}.INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA NOT IN ('sys', 'INFORMATION_SCHEMA') ORDER BY TABLE_SCHEMA, TABLE_NAME, ORDINAL_POSITION",
+                "get_all_columns_under_schema": "SELECT Table_Catalog , TABLE_SCHEMA , TABLE_NAME , COLUMN_NAME , DATA_TYPE  FROM INFORMATION_SCHEMA.COLUMNS WHERE Table_Catalog = '{}' AND TABLE_SCHEMA = '{}' AND TABLE_SCHEMA NOT IN ('sys', 'INFORMATION_SCHEMA') ORDER BY TABLE_SCHEMA, TABLE_NAME, ORDINAL_POSITION",
+                "get_all_columns_under_table": "SELECT Table_Catalog , TABLE_SCHEMA , TABLE_NAME , COLUMN_NAME , DATA_TYPE  FROM INFORMATION_SCHEMA.COLUMNS WHERE Table_Catalog = '{}' AND TABLE_SCHEMA = '{}' AND TABLE_NAME = '{}' AND TABLE_SCHEMA NOT IN ('sys', 'INFORMATION_SCHEMA') ORDER BY TABLE_SCHEMA, TABLE_NAME, ORDINAL_POSITION"
+            }
+        }
+    }
+}

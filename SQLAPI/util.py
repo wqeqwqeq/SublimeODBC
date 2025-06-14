@@ -44,51 +44,83 @@ def get_uid_pw(env_user_var, env_pw_var):
     return crypt(user, encode=False), crypt(pw, encode=False)
 
 
-def load_config(config_path="config.json", strict=True):
-    """Load configuration from JSON file"""
-    try:
-        with open(config_path, 'r') as f:
-            config = json.load(f)
-        return config
-    except FileNotFoundError:
-        if strict:
-            raise FileNotFoundError(f"Config file '{config_path}' not found")
-        else:
-            return {'db_type': 'sqlserver'}
-    except json.JSONDecodeError:
-        if strict:
-            raise ValueError(f"Invalid JSON in config file '{config_path}'")
-        else:
-            return {'db_type': 'sqlserver'}
-
-def load_settings(settings_path="SQL.settings"):
+def load_settings(settings_path="SQLOdbc.sublime-settings", get_cur_dbms_only=False, get_cur_selection_only=False, get_dbms_setting_only=False):
+    """Load settings from the settings file
+    
+    Args:
+        settings_path: Path to the settings file
+        get_cur_dbms_only: If True, return only the current DBMS string
+        get_cur_selection_only: If True, return only the current selection string
+        get_dbms_setting_only: If True, return only the DBMS setting dict
+    Returns:    
+        dict or str: Full settings dict or current DBMS string if get_cur_dbms_only=True or current selection string if get_cur_selection_only=True
+    """
     try:
         with open(settings_path, "r") as f:
             settings = json.loads(f.read())
+        
+        if get_cur_dbms_only:
+            return settings.get('current_dbms', '')
+        elif get_cur_selection_only:
+            return settings.get('current_selection', '')
+        elif get_dbms_setting_only:
+            current_dbms = settings.get('current_dbms', '')
+            settings = settings.get('DBMS_Setting', {}).get(current_dbms, {})
+            return settings
+        
         return settings
     except Exception as e:
-        raise ValueError(f"Error loading {settings_path}: {str(e)}")
+        if get_cur_dbms_only:
+            raise ValueError(f"Error loading current DBMS from {settings_path}: {str(e)}")
+        elif get_cur_selection_only:
+            raise ValueError(f"Error loading current selection from {settings_path}: {str(e)}")
+        elif get_dbms_setting_only:
+            raise ValueError(f"Error loading DBMS setting from {settings_path}: {str(e)}")
+        else:
+            raise ValueError(f"Error loading {settings_path}: {str(e)}")
+
+
+def update_settings(key, value, settings_path="SQLOdbc.sublime-settings"):
+    """Update a specific setting value and save to file
+    
+    Args:
+        key: The setting key to update
+        value: The new value for the setting
+        settings_path: Path to the settings file
+    """
+    try:
+        settings = load_settings(settings_path)
+        settings[key] = value
+        
+        with open(settings_path, "w") as f:
+            f.write(json.dumps(settings, indent=4))
+    except Exception as e:
+        raise ValueError(f"Error updating setting '{key}' in {settings_path}: {str(e)}")
 
 
 def credential_set(show_msg=True):
-    # Load SQL.settings
+    # Load settings to get current DBMS
     try:
-        settings = load_settings()
-        current_dbms = settings.get("current_dbms", "").upper()
+        current_dbms = load_settings(get_cur_dbms_only=True).upper()
+        if not current_dbms:
+            if show_msg:
+                sublime.message_dialog("current_dbms not found in settings")
+            return False
     except Exception as e:
         if show_msg:
-            sublime.message_dialog(f"Error loading SQL.settings: {str(e)}")
+            sublime.message_dialog(f"Error loading settings: {str(e)}")
         return False
     
-    # Load config to check if connection string needs credentials
+    # Load full settings to check if connection string needs credentials
     try:
-        config = load_config("config.json")
-        if current_dbms.lower() not in config:
+        settings = load_settings()
+        db_config = settings.get('DBMS_Setting', {}).get(current_dbms.lower())
+        if not db_config:
             if show_msg:
-                sublime.message_dialog(f"Database configuration for '{current_dbms}' not found in config file")
+                sublime.message_dialog(f"Database configuration for '{current_dbms}' not found in settings")
             return False
             
-        connection_string = config[current_dbms.lower()].get("connection_string", "")
+        connection_string = db_config.get("connection_string", "")
         if not connection_string:
             if show_msg:
                 sublime.message_dialog(f"Connection string not found for '{current_dbms}'")
@@ -101,7 +133,7 @@ def credential_set(show_msg=True):
             
     except Exception as e:
         if show_msg:
-            sublime.message_dialog(f"Error loading config.json: {str(e)}")
+            sublime.message_dialog(f"Error loading settings: {str(e)}")
         return False
     
     # Only check environment variables if credentials are needed

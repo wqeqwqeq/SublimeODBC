@@ -2,6 +2,7 @@ import sublime
 import sublime_plugin
 import os
 from operator import itemgetter
+from SQLAPI.util import load_settings
 
 package_path = sublime.packages_path()
 plugin_path = f"{package_path}\\SQLOdbc"
@@ -42,11 +43,11 @@ class ViewConfig(sublime_plugin.WindowCommand):
 
     def _open_settings(self, read_only):
         if read_only:
-            with open(f"{plugin_path}\\SQL.settings", "r") as f:
+            with open(f"{plugin_path}\\SQLOdbc.sublime-settings", "r") as f:
                 file = f.read()
             self.window.new_file()
             panel = self.window.active_view()
-            panel.set_name("SQL.settings (Read-Only)")
+            panel.set_name("SQLOdbc.sublime-settings (Read-Only)")
             self.window.run_command("insert", {"characters": file})
             panel.assign_syntax("Packages/JSON/JSON.sublime-syntax")
             panel.window().run_command("js_format")
@@ -56,29 +57,23 @@ class ViewConfig(sublime_plugin.WindowCommand):
             self.window.run_command(
                 "open_file",
                 args={
-                    "file": "${packages}/SQLOdbc/SQL.settings"
+                    "file": "${packages}/SQLOdbc/SQLOdbc.sublime-settings"
                 },
             )
 
     def _show_current_settings(self):
-        with open(f"{plugin_path}\\SQL.settings", "r") as f:
-            settings = sublime.decode_value(f.read())
-        
-        current_selection = settings.get("current_selection", "")
-        current_dbms = settings.get("current_dbms", "")
+        current_selection = load_settings(get_cur_selection_only=True)
+        current_dbms = load_settings(get_cur_dbms_only=True)
         message = f"Current Connection Group: {current_selection}\nCurrent DBMS: {current_dbms}"
         sublime.message_dialog(message)
 
     def _open_schema(self, read_only):
-        # First read SQL.settings to get current selection and dbms
-        with open(f"{plugin_path}\\SQL.settings", "r") as f:
-            settings = sublime.decode_value(f.read())
-        
-        current_selection = settings.get("current_selection", "")
-        current_dbms = settings.get("current_dbms", "")
+        # Get current selection and dbms using load_settings
+        current_selection = load_settings(get_cur_selection_only=True)
+        current_dbms = load_settings(get_cur_dbms_only=True)
         
         if not current_selection or not current_dbms:
-            sublime.error_message("Current selection or DBMS not set in SQL.settings")
+            sublime.error_message("Current selection or DBMS not set in settings")
             return
 
         schema_path = f"{plugin_path}\\metastore\\{current_dbms}\\{current_selection}\\db-schema-tbl-col.json"

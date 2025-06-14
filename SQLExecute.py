@@ -28,8 +28,7 @@ class SoStartConn(sublime_plugin.WindowCommand):
     def run(self):
         """Initialize ODBC connection when command is triggered"""
         global conn
-        settings = load_settings()
-        self.current_dbms = settings.get("current_dbms", "")
+        self.current_dbms = load_settings(get_cur_dbms_only=True)
         # Check if environment variables are set
         if credential_set(show_msg=False):
             if conn is not None:

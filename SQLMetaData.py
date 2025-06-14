@@ -8,7 +8,7 @@ import ctypes
 import shutil
 
 from SQLAPI.connect import ConnectorODBC
-from SQLAPI.util import load_package_path, crypt, load_config, credential_set
+from SQLAPI.util import load_package_path, crypt, load_settings, credential_set, update_settings
 
 cache_path, lib_path, plugin_path, metastore_path = load_package_path()
 
@@ -40,8 +40,8 @@ def stop_thread(t1):
 
 class MetaChooseConnection(sublime_plugin.WindowCommand):
     def run(self):
-        self.config = load_config()
-        self.dbms_options = list(self.config.keys())
+        self.config = load_settings()
+        self.dbms_options = list(self.config.get('DBMS_Setting', {}).keys())
         self.window.show_quick_panel(
             self.dbms_options,
             self.on_select,
@@ -53,16 +53,12 @@ class MetaChooseConnection(sublime_plugin.WindowCommand):
             return
         
         self.selected_dbms = self.dbms_options[index].upper()
-        # Update current_dbms in SQL.settings
+        # Update current_dbms in settings
         try:
-            with open("SQL.settings", "r") as f:
-                settings = json.loads(f.read())
-            settings['current_dbms'] = self.selected_dbms.lower()
-            with open("SQL.settings", "w") as f:
-                f.write(json.dumps(settings))
+            update_settings('current_dbms', self.selected_dbms.lower())
             self.window.run_command("so_restart_connection")
         except Exception as e:
-            sublime.message_dialog(f"Error updating SQL.settings: {str(e)}")
+            sublime.message_dialog(f"Error updating settings: {str(e)}")
 
 
 class MetaPassword(MetaChooseConnection):
@@ -110,9 +106,7 @@ class MetaPassword(MetaChooseConnection):
 
 def get_dbms_path():
     """Get the path for the current DBMS folder"""
-    with open("SQL.settings", "r") as f:
-        settings = json.loads(f.read())
-    current_dbms = settings.get('current_dbms', '').lower()
+    current_dbms = load_settings(get_cur_dbms_only=True)
     if not current_dbms:
         return metastore_path
     return os.path.join(metastore_path, current_dbms)
@@ -325,17 +319,11 @@ class MetaSelectConnection(sublime_plugin.WindowCommand):
         
         selected_folder = self.folder_names[index]
         
-        # Read SQL.settings
-        sql_completions_path = "SQL.settings"
-        with open(sql_completions_path, "r") as f:
-            sql_completions = json.loads(f.read())
-        
-        # Update current_selection
-        sql_completions["current_selection"] = selected_folder
-        
-        # Write back to file
-        with open(sql_completions_path, "w") as f:
-            f.write(json.dumps(sql_completions))
+        # Update current_selection in settings
+        try:
+            update_settings("current_selection", selected_folder)
+        except Exception as e:
+            sublime.message_dialog(f"Error updating settings: {str(e)}")
 
 
 class MetaUpdateConnectionGroup(MetaSelectConnection):
@@ -672,11 +660,8 @@ class MetaDeleteConnection(MetaSelectConnection):
 
 class MetaBrowseConnection(sublime_plugin.TextCommand):
     def run(self, edit):
-        # 1. Read current_selection from SQL.settings
-        with open("SQL.settings", "r") as f:
-            js = json.loads(f.read())
-        
-        current_selection = js["current_selection"]
+        # 1. Read current_selection from settings
+        current_selection = load_settings(get_cur_selection_only=True)
         
         # 2. Open current_selection folder under DBMS folder
         dbms_path = get_dbms_path()
@@ -751,18 +736,11 @@ class MetaImportLocalConnection(sublime_plugin.WindowCommand):
             sublime.message_dialog(f"Error copying folder: {str(e)}")
             return
         
-        # Update SQL.settings current_selection
-        sql_completions_path = "SQL.settings"
+        # Update settings current_selection
         try:
-            with open(sql_completions_path, "r") as f:
-                sql_completions = json.loads(f.read())
-            
-            sql_completions["current_selection"] = folder_name
-            
-            with open(sql_completions_path, "w") as f:
-                f.write(json.dumps(sql_completions))
+            update_settings("current_selection", folder_name)
         except Exception as e:
-            sublime.message_dialog(f"Error updating SQL.settings: {str(e)}")
+            sublime.message_dialog(f"Error updating settings: {str(e)}")
             return
 
         # Run meta_select_connection to refresh the selection
