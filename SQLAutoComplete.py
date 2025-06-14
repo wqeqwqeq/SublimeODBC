@@ -82,7 +82,6 @@ class EventListener(sublime_plugin.EventListener):
                 ):
                     cols = db_schema_tbl_col[db][schema][tbl]
                     for col, dtype in cols.items():
-                        dtype = map2.get(dtype) if map2.get(dtype) else dtype
                         txt_show = alias + "." + col + "\t" + dtype
                         txt_fill = alias + "." + col
                         self.completions.append((txt_show, txt_fill))

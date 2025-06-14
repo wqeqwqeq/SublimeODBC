@@ -126,6 +126,30 @@
         "command": "view_config"
     },
     {
+        "caption": "SQLOdbc: Edit KeyMap",
+        "command": "view_config",
+        "args": {
+            "file": "keymap",
+            "read_only": false
+        }
+    },
+    {
+        "caption": "SQLOdbc: Edit Setting",
+        "command": "view_config",
+        "args": {
+            "file": "setting",
+            "read_only": false
+        }
+    },
+    {
+        "caption": "SQLOdbc: Edit ConnGroup Schema",
+        "command": "view_config",
+        "args": {
+            "file": "schema",
+            "read_only": false
+    }
+    },
+    {
         "caption": "SQLOdbc: Rename View",
         "command": "rename_view"
     },
@@ -155,11 +179,28 @@
         "caption": "SQLOdbc: Split Right",
         "command": "set_layout",
         "args": {
-            "cols": [0.0, 0.55, 1.0],
-            "rows": [0.0, 1.0],
+            "cols": [
+                0,
+                0.55,
+                1
+            ],
+            "rows": [
+                0,
+                1
+            ],
             "cells": [
-                [0, 0, 1, 1],
-                [1, 0, 2, 1]
+                [
+                    0,
+                    0,
+                    1,
+                    1
+                ],
+                [
+                    1,
+                    0,
+                    2,
+                    1
+                ]
             ]
         }
     },
@@ -167,12 +208,29 @@
         "caption": "SQLOdbc: Split Down",
         "command": "set_layout",
         "args": {
-            "cols": [0.0, 1.0],
-            "rows": [0.0, 0.55, 1.0],
+            "cols": [
+                0,
+                1
+            ],
+            "rows": [
+                0,
+                0.55,
+                1
+            ],
             "cells": [
-                [0, 0, 1, 1],
-                [0, 1, 1, 2]
+                [
+                    0,
+                    0,
+                    1,
+                    1
+                ],
+                [
+                    0,
+                    1,
+                    1,
+                    2
+                ]
             ]
         }
     }
-] 
+]

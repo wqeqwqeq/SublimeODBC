@@ -80,7 +80,31 @@ def credential_set(show_msg=True):
             sublime.message_dialog(f"Error loading SQL.settings: {str(e)}")
         return False
     
-    # Construct environment variable names based on current DBMS
+    # Load config to check if connection string needs credentials
+    try:
+        config = load_config("config.json")
+        if current_dbms.lower() not in config:
+            if show_msg:
+                sublime.message_dialog(f"Database configuration for '{current_dbms}' not found in config file")
+            return False
+            
+        connection_string = config[current_dbms.lower()].get("connection_string", "")
+        if not connection_string:
+            if show_msg:
+                sublime.message_dialog(f"Connection string not found for '{current_dbms}'")
+            return False
+            
+        # If connection string doesn't need credentials, return True
+        if '{SQL_USERNAME_ENCODED}' not in connection_string and '{SQL_PW_ENCODED}' not in connection_string:
+            print(f"{connection_string} doesn't need credentials")
+            return True
+            
+    except Exception as e:
+        if show_msg:
+            sublime.message_dialog(f"Error loading config.json: {str(e)}")
+        return False
+    
+    # Only check environment variables if credentials are needed
     env_user_var = f"{current_dbms}USERNAMEENCODED"
     env_pw_var = f"{current_dbms}PWENCODED"
     

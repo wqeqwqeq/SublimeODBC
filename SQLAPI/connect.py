@@ -27,11 +27,8 @@ class ConnectorODBC:
         if not connection_string:
             raise ValueError(f"Connection string not found in config file '{config_path}' for '{current_dbms}'")
         
-        # Check if connection string has any format placeholders
-        try:
-            # Try to format with empty values to see if it has placeholders
-            connection_string.format_map({})
-        except KeyError as e:
+        # Check if connection string has specific format placeholders we need to fill
+        if '{SQL_USERNAME_ENCODED}' in connection_string or '{SQL_PW_ENCODED}' in connection_string:
             env_var_user = f'{current_dbms.upper()}USERNAMEENCODED'
             env_var_pw = f'{current_dbms.upper()}PWENCODED'
             
@@ -42,20 +39,12 @@ class ConnectorODBC:
             # Get credentials from environment variables
             user, pw = get_uid_pw(env_var_user, env_var_pw)
             
-            # Fill in the credentials using format_map
-            connection_string = connection_string.format_map({
-                'user': user,
-                'pwd': pw
-            })
+            # Replace only the user and pwd placeholders, preserving driver name curly braces
+            connection_string = connection_string.replace('{SQL_USERNAME_ENCODED}', user).replace('{SQL_PW_ENCODED}', pw)
         
         self.conn = pyodbc.connect(connection_string)
         self.cursor = self.conn.cursor()
         
-        # Inherit methods from the connection object
-        for attr_name in dir(self.conn):
-            if not attr_name.startswith('_') and not hasattr(self, attr_name):
-                setattr(self, attr_name, getattr(self.conn, attr_name))
-
 
 
     def execute(self, query):
