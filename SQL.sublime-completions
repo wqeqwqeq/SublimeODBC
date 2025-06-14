@@ -1,38 +1,187 @@
 {
     "scope": "source.sql",
     "completions": [
-        "SELECT",
-        "UPDATE $0\nSET  =  \nWhere  =  ;",
-        "DELETE",
-        "INSERT INTO $0 VALUES();",
-        "FROM",
-        "WHERE",
-        "GROUP BY",
-        "ORDER BY",
-        "HAVING",
-        "INNER JOIN",
-        "LEFT JOIN",
-        "RIGHT JOIN",
-        "LIMIT",
-        "DISTINCT",
-        "MAX",
-        "MIN",
-        "WITH",
-        "SAMPLE",
-        "WITH cte AS (\n$0\n);",
-        "WITH cte AS (\nSELECT DISTINCT $0 FROM \n)\nSELECT COUNT(*) FROM CTE;",
-        "COUNT",
-        "Count(*)",
-        "Count(DISTINCT $0)",
-        "CREATE MULTISET VOLATILE TABLE #temp_tbl AS (\n$0\n)\nWITH DATA PRIMARY INDEX( ) ON COMMIT PRESERVE ROWS;",
-        "CREATE MULTISET TABLE AS (\n$0\n)\nWITH DATA PRIMARY INDEX( );",
-        "CASE WHEN  $0 THEN  ELSE  END",
-        "CAST($0 as date)",
-        "PARTITION BY",
-        "EXTRACT(YEAR FROM $0)",
-        "EXTRACT(MONTH FROM $0)",
-        "DROP TABLE $0;",
-        "PIVOT \n(\n$0 \nFOR IN (\n 'VAL1' AS VAL1 \n) \n) TMP",
-        "OVER (PARTITION BY $0)"
+        {
+            "trigger": "SELECT",
+            "contents": "SELECT",
+            "kind": ["keyword","K", "SQL Keyword"],
+            "annotation": "SQL Keyword"
+        },
+        {
+            "trigger": "UPDATE",
+            "contents": "UPDATE $0\nSET  =  \nWhere  =  ;",
+            "kind": ["keyword","K", "SQL Keyword"],
+            "annotation": "SQL Keyword"
+        },
+        {
+            "trigger": "DELETE",
+            "contents": "DELETE",
+            "kind": ["keyword","K", "SQL Keyword"],
+            "annotation": "SQL Keyword"
+        },
+        {
+            "trigger": "INSERT",
+            "contents": "INSERT INTO $0 VALUES();",
+            "kind": ["keyword","K", "SQL Keyword"],
+            "annotation": "SQL Keyword"
+        },
+        {
+            "trigger": "FROM",
+            "contents": "FROM",
+            "kind": ["keyword","K", "SQL Keyword"],
+            "annotation": "SQL Keyword"
+        },
+        {
+            "trigger": "WHERE",
+            "contents": "WHERE",
+            "kind": ["keyword","K", "SQL Keyword"],
+            "annotation": "SQL Keyword"
+        },
+        {
+            "trigger": "GROUP BY",
+            "contents": "GROUP BY",
+            "kind": ["keyword","K", "SQL Keyword"],
+            "annotation": "SQL Keyword"
+        },
+        {
+            "trigger": "ORDER BY",
+            "contents": "ORDER BY",
+            "kind": ["keyword","K", "SQL Keyword"],
+            "annotation": "SQL Keyword"
+        },
+        {
+            "trigger": "HAVING",
+            "contents": "HAVING",
+            "kind": ["keyword","K", "SQL Keyword"],
+            "annotation": "SQL Keyword"
+        },
+        {
+            "trigger": "INNER JOIN",
+            "contents": "INNER JOIN",
+            "kind": ["keyword","K", "SQL Keyword"],
+            "annotation": "SQL Keyword"
+        },
+        {
+            "trigger": "LEFT JOIN",
+            "contents": "LEFT JOIN",
+            "kind": ["keyword","K", "SQL Keyword"],
+            "annotation": "SQL Keyword"
+        },
+        {
+            "trigger": "RIGHT JOIN",
+            "contents": "RIGHT JOIN",
+            "kind": ["keyword","K", "SQL Keyword"],
+            "annotation": "SQL Keyword"
+        },
+        {
+            "trigger": "LIMIT",
+            "contents": "LIMIT",
+            "kind": ["keyword","K", "SQL Keyword"],
+            "annotation": "SQL Keyword"
+        },
+        {
+            "trigger": "DISTINCT",
+            "contents": "DISTINCT",
+            "kind": ["keyword","K", "SQL Keyword"],
+            "annotation": "SQL Keyword"
+        },
+        {
+            "trigger": "WITH",
+            "contents": "WITH",
+            "kind": ["keyword","K", "SQL Keyword"],
+            "annotation": "SQL Keyword"
+        },
+        {
+            "trigger": "SAMPLE",
+            "contents": "SAMPLE",
+            "kind": ["keyword","K", "SQL Keyword"],
+            "annotation": "SQL Keyword"
+        },
+        {
+            "trigger": "COUNT",
+            "contents": "COUNT",
+            "kind": ["keyword","K", "SQL Keyword"],
+            "annotation": "SQL Keyword"
+        },
+        {
+            "trigger": "CASE",
+            "contents": "CASE WHEN  $0 THEN  ELSE  END",
+            "kind": ["keyword","K", "SQL Keyword"],
+            "annotation": "SQL Keyword"
+        },
+        {
+            "trigger": "CAST",
+            "contents": "CAST($0 as date)",
+            "kind": ["keyword","K", "SQL Keyword"],
+            "annotation": "SQL Keyword"
+        },
+        {
+            "trigger": "WITH cte",
+            "contents": "WITH cte AS (\n$0\n);",
+            "kind": ["snippet", "SQL snippet"],
+            "annotation": "SQL snippet"
+        },
+        {
+            "trigger": "WITH cte count",
+            "contents": "WITH cte AS (\nSELECT DISTINCT $0 FROM \n)\nSELECT COUNT(*) FROM CTE;",
+            "kind": ["snippet", "SQL snippet"],
+            "annotation": "SQL snippet"
+        },
+
+        {
+            "trigger": "Count(*)",
+            "contents": "Count(*)",
+            "kind": ["function", "SQL func"],
+            "annotation": "SQL func"
+        },
+        {
+            "trigger": "Count(DISTINCT)",
+            "contents": "Count(DISTINCT $0)",
+            "kind": ["function", "SQL func"],
+            "annotation": "SQL Func"
+        },
+
+        {
+            "trigger": "CREATE TABLE",
+            "contents": "CREATE MULTISET TABLE AS (\n$0\n)\nWITH DATA PRIMARY INDEX( );",
+            "kind": ["snippet", "SQL snippet"],
+            "annotation": "SQL snippet"
+        },
+        {
+            "trigger": "PARTITION BY",
+            "contents": "PARTITION BY",
+            "kind": ["snippet", "SQL snippet"],
+            "annotation": "SQL snippet"
+        },
+        {
+            "trigger": "EXTRACT YEAR",
+            "contents": "EXTRACT(YEAR FROM $0)",
+            "kind": ["snippet", "SQL snippet"],
+            "annotation": "SQL snippet"
+        },
+        {
+            "trigger": "EXTRACT MONTH",
+            "contents": "EXTRACT(MONTH FROM $0)",
+            "kind": ["snippet", "SQL snippet"],
+            "annotation": "SQL snippet"
+        },
+        {
+            "trigger": "DROP TABLE",
+            "contents": "DROP TABLE $0;",
+            "kind": ["snippet", "SQL snippet"],
+            "annotation": "SQL snippet"
+        },
+        {
+            "trigger": "PIVOT",
+            "contents": "PIVOT \n(\n$0 \nFOR IN (\n 'VAL1' AS VAL1 \n) \n) TMP",
+            "kind": ["snippet", "SQL snippet"],
+            "annotation": "SQL snippet"
+        },
+        {
+            "trigger": "OVER",
+            "contents": "OVER (PARTITION BY $0)",
+            "kind": ["snippet", "SQL snippet"],
+            "annotation": "SQL snippet"
+        }
     ]
 }
