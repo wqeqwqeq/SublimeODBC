@@ -1,31 +1,26 @@
 import pyodbc
 import os
-from util import get_uid_pw, load_config
+from util import get_uid_pw, load_settings
 import sublime
 
 class ConnectorODBC:
-    def __init__(self, config_path="config.json"):
-        # First load SQL.settings to get current DBMS
-        settings = load_config("SQL.settings")
-        current_dbms = settings.get('current_dbms')
+    def __init__(self):
+        # First load settings to get current DBMS
+        current_dbms = load_settings(get_cur_dbms_only=True)
         if not current_dbms:
-            raise ValueError("current_dbms not found in SQL.settings")
-        
-        # Load configuration from JSON file
-        config = load_config(config_path)
+            raise ValueError("current_dbms not found in settings")
         
         # Get database configuration for current DBMS
-        if current_dbms not in config:
-            raise ValueError(f"Database configuration for '{current_dbms}' not found in config file '{config_path}'")
-        
-        db_config = config[current_dbms]
+        db_config = load_settings(get_dbms_setting_only=True)
+        if not db_config:
+            raise ValueError(f"Database configuration for '{current_dbms}' not found in settings")
         
         self.config = db_config['database_queries']
         
         # Get connection string from config
         connection_string = db_config.get("connection_string")
         if not connection_string:
-            raise ValueError(f"Connection string not found in config file '{config_path}' for '{current_dbms}'")
+            raise ValueError(f"Connection string not found in settings for '{current_dbms}'")
         
         # Check if connection string has specific format placeholders we need to fill
         if '{SQL_USERNAME_ENCODED}' in connection_string or '{SQL_PW_ENCODED}' in connection_string:

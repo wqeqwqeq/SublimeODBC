@@ -24,7 +24,7 @@
         "args": {
             "limit": 300,
             "number_of_cache_query": 20,
-            "timeout": 5,
+            "timeout": 30,
             "output_in_panel": false,
             "queries":null
         }

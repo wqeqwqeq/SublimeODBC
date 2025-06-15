@@ -1,10 +1,10 @@
 [
     {
-        "caption": "SQLOdbc: Start Connection",
+        "caption": "ODBC: Start Connection",
         "command": "so_start_conn"
     },
     {
-        "caption": "SQLOdbc: Run SQL Query",
+        "caption": "ODBC: Run SQL Query",
         "command": "so_run_sql_cmd",
         "args": {
             "limit": 300,
@@ -15,106 +15,90 @@
         }
     },
     {
-        "caption": "SQLOdbc: Format SQL",
+        "caption": "ODBC: Format SQL",
         "command": "sa_format"
     },
     {
-        "caption": "SQLOdbc: Clear Query Cache",
+        "caption": "ODBC: Clear Query Cache",
         "command": "sa_clear_cache"
     },
     {
-        "caption": "SQLOdbc: Interrupt Query",
+        "caption": "ODBC: Interrupt Query",
         "command": "sa_interrupt_query"
     },
     {
-        "caption": "SQLOdbc: Restart Connection",
+        "caption": "ODBC: Restart Connection",
         "command": "so_restart_connection"
     },
     {
-        "caption": "SQLOdbc: Export to CSV",
+        "caption": "ODBC: Export to CSV",
         "command": "so_tbl_to_csv"
     },
     {
-        "caption": "SQLOdbc: Transpose Table",
+        "caption": "ODBC: Transpose Table",
         "command": "tbl_transpose"
     },
     {
-        "caption": "SQLOdbc: Remove Cache File",
+        "caption": "ODBC: Remove Cache File",
         "command": "so_remove_cache_file"
     },
     {
-        "caption": "SQLOdbc: Initialize Metadata",
+        "caption": "ODBC: Get All metadata from DBMS",
         "command": "meta_init",
         "args": {
             "include_dtype": "True"
         }
     },
     {
-        "caption": "SQLOdbc: New Connection Group",
+        "caption": "ODBC: New Connection Group",
         "command": "meta_new_conn_group",
         "args": {
             "include_dtype": "True"
         }
     },
     {
-        "caption": "SQLOdbc: Set Password",
+        "caption": "ODBC: Set Password",
         "command": "meta_password"
     },
     {
-        "caption": "SQLOdbc: Choose Connection",
+        "caption": "ODBC: Choose DBMS Connection",
         "command": "meta_choose_connection"
     },
     {
-        "caption": "SQLOdbc: Delete Connection",
+        "caption": "ODBC: Delete Conn Group",
         "command": "meta_delete_connection"
     },
     {
-        "caption": "SQLOdbc: Browse Connection",
+        "caption": "ODBC: Browse All Cols Under Conn Group",
         "command": "meta_browse_connection"
     },
     {
-        "caption": "SQLOdbc: Update Connection Group",
+        "caption": "ODBC: Refresh Meta in Group",
         "command": "meta_update_connection_group",
         "args": {
             "include_dtype": "True"
         }
     },
     {
-        "caption": "SQLOdbc: Add Table to Group",
+        "caption": "ODBC: Add Table to Conn Group",
         "command": "meta_add_table_in_conn_group",
         "args": {
             "include_dtype": "True"
         }
     },
     {
-        "caption": "SQLOdbc: Remove Table from Group",
+        "caption": "ODBC: Remove Table from Conn Group",
         "command": "meta_remove_table_in_conn_group",
         "args": {
             "include_dtype": "True"
         }
     },
     {
-        "caption": "SQLOdbc: Select Connection",
+        "caption": "ODBC: Select Conn Group",
         "command": "meta_select_connection"
     },
     {
-        "caption": "SQLOdbc: View Keymap",
-        "command": "view_config",
-        "args": {
-            "read_only": true,
-            "file": "keymap"
-        }
-    },
-    {
-        "caption": "SQLOdbc: View Settings",
-        "command": "view_config",
-        "args": {
-            "read_only": true,
-            "file": "setting"
-        }
-    },
-    {
-        "caption": "SQLOdbc: View Current Schema",
+        "caption": "ODBC: View Current Schema",
         "command": "view_config",
         "args": {
             "read_only": true,
@@ -122,61 +106,61 @@
         }
     },
     {
-        "caption": "SQLOdbc: View Current Connection",
-        "command": "view_config"
-    },
-    {
-        "caption": "SQLOdbc: Edit KeyMap",
-        "command": "view_config",
-        "args": {
-            "file": "keymap",
-            "read_only": false
-        }
-    },
-    {
-        "caption": "SQLOdbc: Edit Setting",
-        "command": "view_config",
-        "args": {
-            "file": "setting",
-            "read_only": false
-        }
-    },
-    {
-        "caption": "SQLOdbc: Edit ConnGroup Schema",
+        "caption": "ODBC: Edit ConnGroup Schema",
         "command": "view_config",
         "args": {
             "file": "schema",
             "read_only": false
-    }
+        }
     },
     {
-        "caption": "SQLOdbc: Rename View",
+        "caption": "ODBC: View Current Connection",
+        "command": "view_config"
+    },
+    {
+        "caption": "ODBC: Edit KeyMap",
+        "command": "edit_settings",
+        "args": {
+            "base_file": "${packages}/SQLOdbc/Default (Windows).sublime-keymap",
+            "default": "{}"
+        }
+    },
+    {
+        "caption": "ODBC: Edit Setting",
+        "command": "edit_settings",
+        "args": {
+            "base_file": "${packages}/SQLOdbc/SQLOdbc.sublime-settings",
+            "default": "{}"
+        }
+    },
+    {
+        "caption": "ODBC: Rename View",
         "command": "rename_view"
     },
     {
-        "caption": "SQLOdbc: Zoom In",
+        "caption": "ODBC: Zoom In",
         "command": "view_zoom",
         "args": {
             "zoomin": true
         }
     },
     {
-        "caption": "SQLOdbc: Zoom Out",
+        "caption": "ODBC: Zoom Out",
         "command": "view_zoom",
         "args": {
             "zoomin": false
         }
     },
     {
-        "caption": "SQLOdbc: Sort Tabs",
+        "caption": "ODBC: Sort Tabs",
         "command": "sort_tabs_in_order"
     },
     {
-        "caption": "SQLOdbc: Resize Window Group",
+        "caption": "ODBC: Resize Window Group",
         "command": "resize_window_group"
     },
     {
-        "caption": "SQLOdbc: Split Right",
+        "caption": "ODBC: Split Right",
         "command": "set_layout",
         "args": {
             "cols": [
@@ -205,7 +189,7 @@
         }
     },
     {
-        "caption": "SQLOdbc: Split Down",
+        "caption": "ODBC: Split Down",
         "command": "set_layout",
         "args": {
             "cols": [

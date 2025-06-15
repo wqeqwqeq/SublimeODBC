@@ -2,12 +2,12 @@ import sublime_plugin
 import sublime
 import os
 import json
-from SQLAPI.util import load_package_path  
+from SQLAPI.util import load_package_path,load_settings  
 import re 
 
 
 
-cache_path, lib_path, plugin_path, js_path = load_package_path()
+cache_path, lib_path, plugin_path, js_path, user_path = load_package_path()
 
 # do we need to lower the completion column?
 
@@ -187,11 +187,9 @@ class EventListener(sublime_plugin.EventListener):
         return content
 
     def load_js(self, file):
-         
-        with open("SQL.settings", "r") as f:
-            custom_completions = json.loads(f.read())
-            current_selection = custom_completions.get("current_selection")
-            current_dbms = custom_completions.get("current_dbms")
+
+        current_selection = load_settings(get_cur_selection_only=True)
+        current_dbms = load_settings(get_cur_dbms_only=True)
 
         auto_completion_path = os.path.join(js_path, current_dbms, current_selection, f"{file}.json")
 
