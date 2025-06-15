@@ -4,7 +4,7 @@ from util import get_uid_pw, load_settings
 import sublime
 
 class ConnectorODBC:
-    def __init__(self, config_path="SQLOdbc.sublime-settings"):
+    def __init__(self):
         # First load settings to get current DBMS
         current_dbms = load_settings(get_cur_dbms_only=True)
         if not current_dbms:

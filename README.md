@@ -36,28 +36,126 @@ A Sublime Text plugin to help users connect to and interact with ODBC-compatible
 
 ---
 
-## Quick Start
+## Getting Started - Step by Step
 
-### 1. Set Up Credentials
+Follow this onboarding guide to get up and running with SQLOdbc:
 
-- Press `Ctrl+M, Ctrl+P` to set your DBMS username and password (stored as environment variables, base64-encoded).
+### Step 1: Configure Your Database Connection
 
-### 2. Start a Connection
+First, you need to configure your ODBC connection string and database queries:
 
-- Press `Ctrl+E, Ctrl+O` to start an ODBC connection to your configured DBMS.
+1. **Open Settings**: 
+   - Via Command Palette: Press `Ctrl+Shift+P`, type "ODBC: Edit Setting"
+   - Via Menu: Go to `SQLOdbc > View > Edit setting`
+   - Via Keyboard: Press `Ctrl+U, Ctrl+S` to view current settings (read-only)
 
-### 3. Run a Query
+2. **Edit Connection Details**: Configure your ODBC connection string and database-specific queries in the settings file. This includes:
+   - ODBC connection strings for your database
+   - Database-specific metadata queries
+   - Default connection preferences
 
-- Select your SQL and press `Ctrl+E, Ctrl+E` to execute. Results appear in a new tab or output panel.
+### Step 2: Customize Key Bindings (Optional)
 
-### 4. Use Auto-Completion
+Personalize your keyboard shortcuts:
 
-- As you type SQL, completions for DB, schema, table, and columns will appear, based on your metadata.
+1. **Open KeyMap**:
+   - Via Command Palette: Press `Ctrl+Shift+P`, type "ODBC: Edit KeyMap"
+   - Via Menu: Go to `SQLOdbc > View > Edit KeyMap`
 
-### 5. Manage Metadata
 
-- Press `Ctrl+M, Ctrl+I` to initialize metadata for the current DBMS.
-- Use other `Ctrl+M` shortcuts to add/remove tables, update groups, or browse metadata.
+2. **Customize**: Modify key bindings to match your preferences
+
+### Step 3: Save Database Credentials as environmental variable (Optional)
+
+Configure your database username and password:
+
+- Press `Ctrl+M, Ctrl+P` to set your DBMS credentials
+- Credentials are stored as environment variables (base64-encoded for security)
+- **Don't change `SQL_USERNAME_ENCODED` and `SQL_PW_ENCODED` as they are reserved for environmental variable for password setup**
+- skip or overwrite the entire connection string if you don't want to store your password as environmental variable
+
+### Step 4: Start Your Database Connection
+
+Connect to your database using any of these methods:
+
+- **Keyboard**: Press `Ctrl+E, Ctrl+O`
+- **Command Palette**: Press `Ctrl+Shift+P`, type "ODBC: Start Connection"  
+- **Menu**: Go to `SQLOdbc > Connection > Start Connection`
+
+
+
+### Step 5: Test with a Simple Query
+
+Try running a basic query to confirm everything works:
+
+1. **For Snowflake users**: Type `select current_user()` in a new file
+2. **For SQL Server users**: Try `SELECT @@VERSION`
+3. **Execute**: Select your query text and press `Ctrl+E, Ctrl+E`
+4. **Results**: View results in a new tab or output panel
+
+### Step 6: Explore Auto-Completion
+
+The plugin includes example database schema for testing auto-completion:
+
+1. **Start typing SQL**: Begin with `SELECT * FROM `
+2. **Trigger completion**: Press `Ctrl+Space` to see available databases, schemas, tables, and columns
+3. **Explore**: Try typing table aliases and see column suggestions appear automatically
+4. **Example**: The plugin includes sample connection groups you can use to test completions
+5. To view the example auto completion, see `SQLOdbc > View > Edit Conn Group Schema`
+
+### Step 7: Load Your Database Metadata
+
+Get comprehensive metadata from your database for full auto-completion support:
+
+1. **Initialize Metadata**:
+   - **Keyboard**: Press `Ctrl+M, Ctrl+I`
+   - **Command Palette**: "ODBC: Get All metadata from DBMS"
+   - **Menu**: `SQLOdbc > Metadata > Get All metadata from DBMS`
+
+2. **Wait for completion**: This process will scan your entire database environment (can take a few minutes for large databases)
+
+3. **Enjoy full completions**: Once complete, you'll have auto-completion for all accessible databases, schemas, tables, and columns in your environment
+
+### Step 8: Manage Connection Groups (Advanced)
+
+#### Understanding Connection Groups and DBMS Switching
+
+**Connection Groups** are collections of database objects (schemas, tables, columns) organized for efficient metadata management and auto-completion. Each connection group belongs to a specific DBMS and contains curated sets of tables and their metadata.
+
+**Switching Between DBMS**: To work with different database systems (e.g., SQL Server vs Snowflake):
+
+1. **Choose DBMS Connection**:
+   - **Keyboard**: Press `Ctrl+M, Ctrl+C`
+   - **Command Palette**: "ODBC: Choose DBMS Connection"
+   - **Menu**: `SQLOdbc > Connection > Choose DBMS Connection`
+
+2. **Select Connection Group**: After switching DBMS, choose the appropriate connection group:
+   - **Keyboard**: Press `Ctrl+M, Ctrl+S`
+   - **Command Palette**: "ODBC: Select Conn Group"
+
+**Important Notes**:
+- Connection groups are **managed separately per DBMS** - your Snowflake groups won't appear when connected to SQL Server
+- Each DBMS maintains its own metadata structure and connection groups
+- You can have multiple connection groups per DBMS for different projects or data domains
+
+
+Organize your database objects into connection groups for better management:
+
+- **Create groups**: Press `Ctrl+M, Ctrl+N` to create new connection groups
+- **Add specific tables**: Press `Ctrl+M, Ctrl+A` to add tables to a group
+- **Browse metadata**: Press `Ctrl+M, Ctrl+B` to explore your connection group's metadata
+- **Switch groups**: Press `Ctrl+M, Ctrl+S` to select different connection groups
+
+
+## Quick Reference
+
+### Essential Shortcuts
+- `Ctrl+E, Ctrl+O`: Start connection
+- `Ctrl+E, Ctrl+E`: Run selected SQL
+- `Ctrl+M, Ctrl+P`: Set credentials  
+- `Ctrl+M, Ctrl+I`: Load all metadata
+- `Ctrl+Space`: Trigger auto-completion
+- `Ctrl+Shift+P`: Open Command Palette (access all commands)
 
 ---
 
@@ -79,7 +177,7 @@ The key bindings are organized by their source files:
 |                    | args: `{                         |                                             |
 |                    |   "limit": 300,                  | Maximum rows to fetch                       |
 |                    |   "number_of_cache_query": 20,   | Number of queries to cache                  |
-|                    |   "timeout": 5,                  | Query timeout in seconds                    |
+|                    |   "timeout": 30,                 | Query timeout in seconds                    |
 |                    |   "output_in_panel": false,      | Show results in panel vs new tab            |
 |                    |   "queries": null                | Optional query override                     |
 |                    | }`                               |                                             |
@@ -193,13 +291,96 @@ SQLOdbc/
 - Metadata is stored in `metastore/<dbms>/<group>/` as JSON and text files.
 - Auto-completion uses this metadata for fast, context-aware suggestions.
 - Use the `meta_*` commands to manage and refresh metadata as your schema changes.
-- There is an example connection group in snowflake and   
+- There are example connection groups included for reference and testing.
 
 ---
 
 ## Menus
 
-A menu entry "SQLOdbc" is added to the main menu, with submenus for Connection, Metadata, Selection, and View, mirroring the key bindings.
+The plugin adds a comprehensive "SQLOdbc" menu to the main menu bar with the following structure:
+
+### Connection Menu
+- **Start Connection**: Initialize ODBC connection
+- **Choose DBMS Connection**: Select from available database connections
+- **Run SQL Command**: Execute SQL queries with customizable options
+- **Format SQL**: Format SQL code for readability
+- **Clear Cache**: Clear query result cache
+- **Interrupt Query**: Stop currently running queries
+- **Restart Connection**: Restart the database connection
+- **Remove Cache File**: Delete cache files from disk
+
+### Metadata Menu
+- **Get All metadata from DBMS**: Initialize complete metadata from database
+- **New Conn Group**: Create new connection group
+- **Password**: Set database credentials
+- **Delete Conn Group**: Remove connection group
+- **Browse All Cols in Conn Group**: Browse metadata columns
+- **Refresh Meta in Conn Group**: Update connection group metadata
+- **Add Table to Conn Group**: Add specific tables to connection group
+- **Remove Table from Conn Group**: Remove tables from connection group
+- **Select Conn Group**: Choose active connection group
+- **Select Query split by Semicolon**: Expand selection to semicolon
+
+### UI Menu
+- **Rename View**: Rename current tab/view
+- **Zoom In/Out**: Adjust view zoom level
+- **Sort Tabs in Order**: Sort tabs alphabetically
+- **Split Right/Down**: Split editor layout
+- **Max/Min Query Result Panel**: Toggle result panel size
+
+### View Menu
+- **View ConnGroup Schema (Read Only)**: View current schema
+- **Edit KeyMap**: Customize key bindings
+- **Edit setting**: Modify plugin settings
+- **Edit ConnGroup Schema**: Edit schema configuration
+- **View Current Conn**: Display current connection info
+
+All menu items correspond to commands available in the Command Palette (Ctrl+Shift+P) with "ODBC:" prefix.
+
+---
+
+## Command Palette
+
+All plugin functionality is accessible through the Command Palette (Ctrl+Shift+P). Commands are prefixed with "ODBC:" for easy discovery:
+
+### Connection Commands
+- `ODBC: Start Connection`
+- `ODBC: Run SQL Query`
+- `ODBC: Format SQL`
+- `ODBC: Clear Query Cache`
+- `ODBC: Interrupt Query`
+- `ODBC: Restart Connection`
+- `ODBC: Export to CSV`
+- `ODBC: Transpose Table`
+- `ODBC: Remove Cache File`
+
+### Metadata Commands
+- `ODBC: Get All metadata from DBMS`
+- `ODBC: New Connection Group`
+- `ODBC: Set Password`
+- `ODBC: Choose DBMS Connection`
+- `ODBC: Delete Conn Group`
+- `ODBC: Browse All Cols Under Conn Group`
+- `ODBC: Refresh Meta in Group`
+- `ODBC: Add Table to Conn Group`
+- `ODBC: Remove Table from Conn Group`
+- `ODBC: Select Conn Group`
+
+### View Commands
+- `ODBC: View Current Schema`
+- `ODBC: Edit ConnGroup Schema`
+- `ODBC: View Current Connection`
+- `ODBC: Edit KeyMap`
+- `ODBC: Edit Setting`
+
+### UI Commands
+- `ODBC: Rename View`
+- `ODBC: Zoom In`
+- `ODBC: Zoom Out`
+- `ODBC: Sort Tabs`
+- `ODBC: Resize Window Group`
+- `ODBC: Split Right`
+- `ODBC: Split Down`
 
 ---
 
