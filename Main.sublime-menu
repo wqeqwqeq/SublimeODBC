@@ -52,14 +52,14 @@
                 "caption": "Metadata",
                 "children": [
                     {
-                        "caption": "Initialize Metadata",
+                        "caption": "Get All metadata from DBMS",
                         "command": "meta_init",
                         "args": {
                             "include_dtype": "True"
                         }
                     },
                     {
-                        "caption": "New Connection Group",
+                        "caption": "New Conn Group",
                         "command": "meta_new_conn_group",
                         "args": {
                             "include_dtype": "True"
@@ -70,36 +70,36 @@
                         "command": "meta_password"
                     },
                     {
-                        "caption": "Delete Connection Group",
+                        "caption": "Delete Conn Group",
                         "command": "meta_delete_connection"
                     },
                     {
-                        "caption": "Browse Cols in Conn Group",
+                        "caption": "Browse All Cols in Conn Group",
                         "command": "meta_browse_connection"
                     },
                     {
-                        "caption": "Update Connection Group",
+                        "caption": "Refresh Meta in Conn Group",
                         "command": "meta_update_connection_group",
                         "args": {
                             "include_dtype": "True"
                         }
                     },
                     {
-                        "caption": "Add Table to Connection Group",
+                        "caption": "Add Table to Conn Group",
                         "command": "meta_add_table_in_conn_group",
                         "args": {
                             "include_dtype": "True"
                         }
                     },
                     {
-                        "caption": "Remove Table from Connection Group",
+                        "caption": "Remove Table from Conn Group",
                         "command": "meta_remove_table_in_conn_group",
                         "args": {
                             "include_dtype": "True"
                         }
                     },
                     {
-                        "caption": "Select Connection Group",
+                        "caption": "Select Conn Group",
                         "command": "meta_select_connection"
                     },
                     {
@@ -170,22 +170,6 @@
                 "caption": "View",
                 "children":[
                     {
-                        "caption": "View KeyMap (Read Only)",
-                        "command": "view_config",
-                        "args": {
-                            "read_only": true,
-                            "file": "keymap"
-                        }
-                    },
-                    {
-                        "caption": "View Setting (Read Only)",
-                        "command": "view_config",
-                        "args": {
-                            "read_only": true,
-                            "file": "setting"
-                        }
-                    },
-                    {
                         "caption": "View ConnGroup Schema (Read Only)",
                         "command": "view_config",
                         "args": {
@@ -195,19 +179,19 @@
                     },
                     {
                         "caption": "Edit KeyMap",
-                        "command": "view_config",
-                        "args": {
-                            "file": "keymap",
-                            "read_only": false
-                        }
+                        "command": "edit_settings", 
+                        "args":{
+                                    "base_file": "${packages}/SQLOdbc/Default (Windows).sublime-keymap",
+                                    "default": "{}"
+                                }
                     },
                     {
-                        "caption": "Edit Setting",
-                        "command": "view_config",
-                        "args": {
-                            "file": "setting",
-                            "read_only": false
-                        }
+                        "caption": "Edit setting",
+                        "command": "edit_settings", 
+                        "args":{
+                                    "base_file": "${packages}/SQLOdbc/SQLOdbc.sublime-settings",
+                                    "default": "{}"
+                                }
                     },
                     {
                         "caption": "Edit ConnGroup Schema",

@@ -10,7 +10,7 @@ import shutil
 from SQLAPI.connect import ConnectorODBC
 from SQLAPI.util import load_package_path, crypt, load_settings, credential_set, update_settings
 
-cache_path, lib_path, plugin_path, metastore_path = load_package_path()
+cache_path, lib_path, plugin_path, metastore_path,user_path = load_package_path()
 
 
 

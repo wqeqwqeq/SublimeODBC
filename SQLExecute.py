@@ -15,7 +15,7 @@ import sqlparse
 
 
 # Global paths
-cache_path, lib_path, project_path, metastore_path = load_package_path()
+cache_path, lib_path, project_path, metastore_path, user_path = load_package_path()
 # Global connection object
 conn = None
 

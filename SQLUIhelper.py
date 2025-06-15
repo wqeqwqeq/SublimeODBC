@@ -10,56 +10,13 @@ plugin_path = f"{package_path}\\SQLOdbc"
 
 class ViewConfig(sublime_plugin.WindowCommand):
     def run(self, read_only=True, file=None):
-        if file == 'keymap':
-            self._open_keymap(read_only)
-        elif file == 'setting':
-            self._open_settings(read_only)
-        elif file == 'schema':
+        if file == 'schema':
             self._open_schema(read_only)
         elif file is None:
             self._show_current_settings()
         else:
             sublime.error_message("Invalid file type specified")
 
-    def _open_keymap(self, read_only):
-        if read_only:
-            with open(f"{plugin_path}\\Default (Windows).sublime-keymap", "r") as f:
-                file = f.read()
-            self.window.new_file()
-            panel = self.window.active_view()
-            panel.set_name("Default (Windows).sublime-keymap (Read-Only)")
-            self.window.run_command("insert", {"characters": file})
-            panel.assign_syntax("Packages/JSON/JSON.sublime-syntax")
-            panel.window().run_command("js_format")
-            panel.set_read_only(True)
-            panel.set_scratch(True)
-        else:
-            self.window.run_command(
-                "open_file",
-                args={
-                    "file": "${packages}/SQLOdbc/Default (Windows).sublime-keymap"
-                },
-            )
-
-    def _open_settings(self, read_only):
-        if read_only:
-            with open(f"{plugin_path}\\SQLOdbc.sublime-settings", "r") as f:
-                file = f.read()
-            self.window.new_file()
-            panel = self.window.active_view()
-            panel.set_name("SQLOdbc.sublime-settings (Read-Only)")
-            self.window.run_command("insert", {"characters": file})
-            panel.assign_syntax("Packages/JSON/JSON.sublime-syntax")
-            panel.window().run_command("js_format")
-            panel.set_read_only(True)
-            panel.set_scratch(True)
-        else:
-            self.window.run_command(
-                "open_file",
-                args={
-                    "file": "${packages}/SQLOdbc/SQLOdbc.sublime-settings"
-                },
-            )
 
     def _show_current_settings(self):
         current_selection = load_settings(get_cur_selection_only=True)

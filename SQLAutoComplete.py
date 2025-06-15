@@ -7,7 +7,7 @@ import re
 
 
 
-cache_path, lib_path, plugin_path, js_path = load_package_path()
+cache_path, lib_path, plugin_path, js_path, user_path = load_package_path()
 
 # do we need to lower the completion column?
 
